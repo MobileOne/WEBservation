@@ -3,11 +3,11 @@ var ConstatManager = Class({
     constats : [ // : Array
     	{ id : 1, clientId : 1, clientName : "ClientName1", 
             content : [
-                {id : 1, type : "pic",   value : "test.jpg" },
-                {id : 2, type : "pic",   value : "test.jpg" },
-                {id : 3, type : "sound", value : "test.mp3" },
-                {id : 4, type : "sound", value : "test.mp3" },
-                {id : 5, type : "video", value : "lienToVideo" }
+                {id : 1, type : "img",   value : "test.jpg" },
+                {id : 2, type : "img",   value : "test.jpg" },
+                {id : 3, type : "audio", value : "test.mp3" },
+                {id : 4, type : "audio", value : "test.mp3" },
+                {id : 5, type : "video", value : "test.mp4" }
             ] 
         },
     	{ id : 2, clientId : 2, clientName : "ClientName2" },
@@ -42,6 +42,11 @@ var ConstatManager = Class({
 
     editConstat : function (id) {
         var constat = this.getConstatById( id);
+        if (!constat){
+            $('#alert_text').text("Erreur : Constat indisponible")
+           $('#alert').modal()
+            return "";
+        }
         $(this.container).empty();
         $(this.container).append( "<h2>" + constat.clientName + "</h2>");
 
@@ -54,61 +59,28 @@ var ConstatManager = Class({
 
         if (!constat.content){
             $(this.container).append( "Ce constat ne contient aucune pièce jointe");
+            $(this.container).append( '<br/><button type="submit" class="btn btn-success">Sauvegarder</button>');
+            $(this.container).append( '</form>');
             return;
         }
 
-        
-
-
-
-        /*for (var i = 0; i < constat.content.length; i++){
-            if ( constat.content[i].type == "sound"){
-                var audio = this.buildCollapse( constat.content[i]);
-                $(this.container).append( audio);
-            }
-        }*/
-
-        
-
         $(this.container).append(this.buildCollapse("Audio", constat, "audio"));
-        $(this.container).append(this.buildCollapse("Photo", constat, "pic"));
+        $(this.container).append(this.buildCollapse("Photo", constat, "img"));
+        $(this.container).append(this.buildCollapse("Video", constat, "video"));
+        $(this.container).append( '<br/><button type="submit" class="btn btn-success">Sauvegarder</button>');
         $(this.container).append( '</form>');
     },
 
-    buildAudioPlayer : function( constat){
-        if ( !constat) return "";
-        var audio = "";
+    buildPJ : function( constat, type, balise){
+        var content = "";
         for (var i = 0; i < constat.content.length; i++){ 
-            if ( constat.content[i].type == "sound"){
-                audio  +='<div class="panel-body">'
-                        +'  <audio id="audio_' + constat.content[i].id + '" preload="auto" controls>'
-                        +'      <source src="data/sound/' + constat.content[i].value + '" />'
-                        +'  </audio>'
-                        +'</div>'  
-                $( 'audio_' + constat.content[i].id).audioPlayer({
-                    classPrefix: 'audioplayer',
-                    strPlay: 'Play',
-                    strPause: 'Pause',
-                    strVolume: 'Volume'
-                });
+            if ( constat.content[i].type == type){
+                content +=' <div class="panel-body">'
+                        +'      <'+type+' style="width:100%;" controls="controls" src="data/'+type+'/' + constat.content[i].value + '"/>'
+                        +'  </div>'  
             }
         }      
-        return audio;
-    },
-
-    buildPicture : function( constat){
-        if ( !constat) return "";
-        var pic = "";
-        for (var i = 0; i < constat.content.length; i++){ 
-            if ( constat.content[i].type == "pic"){
-                pic  +='<div class="panel-body">'
-                        +'  <img src="data/pic/' + constat.content[i].value + '"/>'
-                        +'      '
-                        +'  '
-                        +'</div>'  
-            }
-        }      
-        return pic;
+        return content;
     },
 
     buildCollapse : function( title, constats, type){
@@ -121,8 +93,9 @@ var ConstatManager = Class({
                 +'          </div>'
                 +'      <div id="buildCollapseOne_' + title +'" class="panel-collapse collapse out">';
 
-        if(type == "audio")  a += this.buildAudioPlayer( constats);
-        if(type == "pic")    a += this.buildPicture( constats);
+        if(type == "img")   a += this.buildPJ( constats, "img");
+        if(type == "audio") a += this.buildPJ( constats, "audio");
+        if(type == "video") a += this.buildPJ( constats, "video");
 
             a  +='      </div>'
                 +'  </div>'
@@ -130,7 +103,6 @@ var ConstatManager = Class({
     },
 
     getConstatById : function (id) {
-        for (var i = 0; i < this.constats.length; i++)
-            if (this.constats[i].id == id) return this.constats[i];
+        for (var i = 0; i < this.constats.length; i++) if (this.constats[i].id == id) return this.constats[i];
     }
 });

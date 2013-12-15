@@ -36,7 +36,7 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="#constats" onclick="main.openConstats()">Constats</a></li>
-            <li><a href="#clients">Clients</a></li>
+            <li><a href="#clients"  onclick="main.openClientsList()">Clients</a></li>
             <li><a href="#admin">Administration</a></li>
           </ul>
 
@@ -44,26 +44,29 @@
             <a class="navbar-brand" href="#" style="padding-bottom:0px; padding-top:0px; line-height:30px">Nono Corporation</a>
             <button type="submit" class="btn btn-danger">Déconnexion</button>
           </form>
-   
         </div>
       </div>
     </div>
 
-
-      <div id="container" class="container">
-        
-
-        
+      <div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body" id="alert_text">
+              Erreur
+            </div>
+          </div>
+        </div>
       </div>
+
+      <div id="container" class="container"></div>
     
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 
         <script src="js/vendor/bootstrap.min.js"></script>
-        <script src="js/vendor/audioplayer.js"></script>
         <script src="js/klass.js"></script>
         <script src="js/constatManager.js"></script>
-
+        <script src="js/clientManager.js"></script>
         <script src="js/main.js"></script>
     </body>
 </html>
