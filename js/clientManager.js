@@ -5,7 +5,7 @@ var ClientManager = Class({
             constats : [
                 {id : 1, name : "test1" },
                 {id : 2, name : "test2" },
-                {id : 23, name : "test3" }
+                {id : 23, name : "test23" }
             ] 
         },
     	{ id : 2, name : "Fred" },
@@ -18,7 +18,24 @@ var ClientManager = Class({
 
     openClientsList : function(){
         $(this.container).empty();
+        this.buildAddClientForm();
         this.buildClientsList();
+    },
+
+    buildAddClientForm : function(){
+        var form = ''
+        +' <h2>Ajouter un nouveau client</h2>'
+        +' <form class="form-horizontal" role="form">'
+        +'   <div class="form-group col-sm-12">'
+        +'     <input type="text"     class="form-control" id="create_client"  placeholder="Identité du nouveau client">'
+        +'   </div>'        
+        +'   <div class="form-group">'
+        +'     <div class="col-sm-12">'
+        +'       <button type="submit" class="btn btn-success">Valider création</button>'
+        +'     </div>'
+        +'   </div>'
+        +' </form>'
+        $(this.container).append( form);
     },
 
     buildClientsList : function(){
@@ -60,18 +77,3 @@ var ClientManager = Class({
                 return this.clients[i];
     }
 });
-
-
-/*
-buildPJ : function( constat, type, balise){
-        var content = "";
-        for (var i = 0; i < constat.content.length; i++){ 
-            if ( constat.content[i].type == type){
-                content +=' <div class="panel-body">'
-                        +'      <'+type+' style="width:100%;" controls="controls" src="data/'+type+'/' + constat.content[i].value + '"/>'
-                        +'  </div>'  
-            }
-        }      
-        return content;
-    },
-*/
