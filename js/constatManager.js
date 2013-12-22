@@ -57,7 +57,8 @@ var ConstatManager = Class({
         $(this.container).append( '<form class="form-horizontal" role="form">');
 
         var textArea    = '<label for="constat_text">Texte</label>'
-                        + '<textarea id="constat_text" class="form-control" rows="10" style="display:none;"><h3>azerty</h3></textarea>'
+                        + '<iframe id="printPdf" srcdoc="" style="display:none"></iframe>'
+                        + '<textarea id="constat_text" class="form-control" rows="10" style="display:none;"> </textarea>'
         
         var epiceditor = '<div id="epiceditor" style="height:px; width:px; background-color: grey;"></div>'
 
@@ -105,7 +106,7 @@ var ConstatManager = Class({
 
         if (!constat.content){
             $(this.container).append( "Ce constat ne contient aucune pièce jointe");
-            $(this.container).append( '<br/><button type="submit" class="btn btn-success" onclick="main.saveMarkdown()">Sauvegarder</button>');
+            $(this.container).append( '<br/><button type="submit" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
             $(this.container).append( '</form>');
             return;
         }
@@ -113,17 +114,19 @@ var ConstatManager = Class({
         $(this.container).append(this.buildCollapse("Audio", constat, "audio"));
         $(this.container).append(this.buildCollapse("Photo", constat, "img"));
         $(this.container).append(this.buildCollapse("Position", constat, "gps"));
-        $(this.container).append( '<br/><button type="submit" class="btn btn-success" onclick="main.saveMarkdown()">Sauvegarder</button>');
+        $(this.container).append( '<br/><button type="submit" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
         $(this.container).append( '</form>');
     },
 
     saveMarkdown : function(){
-        var html = this.markdownEditor.exportFile( null, "text");
-        console.log(html);
+        var html = this.markdownEditor.exportFile( null, "html");
+        $("#printPdf").attr("srcdoc", html);
 
-        var doc = new jsPDF();
-        doc.text(20, 20, html);
-        doc.output('datauri');
+        setTimeout( function(){
+            
+            window.frames["printPdf"].print();
+        }, 1000);
+
     },
 
     buildPJ : function( constat, type, balise){
@@ -131,7 +134,7 @@ var ConstatManager = Class({
         for (var i = 0; i < constat.content.length; i++){ 
             if ( constat.content[i].type == type){ 
                 content +='<div class="panel-body">'
-                        if (type == "img")   content +='<img style="width:100%;"  src="' + constat.content[i].value + '"/>'
+                        if (type == "img")   content +=' <div class="col-sm-12"> <input class="form-control" type="text" value="![Image](' + constat.content[i].value + ')"/> </div> <img style="width:100%;"  src="' + constat.content[i].value + '"/>'
                         if (type == "audio") content +='<audio style="width:100%;" controls="controls" src="data/audio/' + constat.content[i].value + '"/>'
                         if (type == "gps")   {
                             content +='<div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.content[i].x+'" y="'+constat.content[i].y+'"></div>'
