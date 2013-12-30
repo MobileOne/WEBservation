@@ -1,40 +1,69 @@
 var AdminManager = Class({
-    container : "#container",
-    users : [ // : Array
-        { id : 1, firstName : "Geoffrey",  name : "Noel", email : "nono@nono.fr"},
-        { id : 2, firstName : "Fred",      name : "Baraillon"},
-        { id : 3, firstName : "Jérémy",    name : "Duval"},
-        { id : 4, firstName : "Guillaume", name : "Roy"},
-        { id : 5, firstName : "Bastien",   name : "Poidevain"}
-    ],
+    container : config.container,
+    users     : null,
+    corp      : { id : 1, name : "Nono Corporation",  discUsage : 50, email : "nono@nonocorp.com"},
 
-    corp : { id : 1, name : "Nono Corporation",  discUsage : 50, email : "nono@nonocorp.com"},
-
-    initialize : function () { 
-    },
+    initialize : function () {},
 
     openAdmin : function () { 
+        var self = this;
         $(this.container).empty();
         this.buildNewUsherForm();
         this.buildCorpStat();
-        this.buildUsersList();
+
+        var userList = new Ajax( "users.json", null, "get"); 
+        userList.onSuccess = function( data){ 
+            self.users = data.users;
+            self.buildUsersList();
+        };
+
+        userList.onError = function( data){
+            $(this.container).append( '<h2>Liste des utilisateurs</h2>');
+            $(this.container).append( 'Erreur de chargement');
+        };
+        userList.call();
     },
 
     buildNewUsherForm : function(){
         var form = ''
         +'  <h2>Ajouter un utilisateur</h2>'
-        +'  <form class="form-inline" role="form">'
-        +       this.buildInput("firstName", "", "Prénom", true)
-        +       this.buildInput("name", "", "Nom", true)
-        +       this.buildInput("email", "", "Email", true)
-        +       this.buildInput("pass", "", "Mot de passe", true, "password")
+        +'  <form class="form-inline" role="form" method="post" id="form_new_user">'
+        +       this.buildInput("first_name", "", "Prénom",       true)
+        +       this.buildInput("last_name",  "", "Nom",          true)
+        +       this.buildInput("email",      "", "Email",        true, "email")
+        +       this.buildInput("pass",       "", "Mot de passe", true, "password")
         +'      <div class="form-group col-sm-12">'
         +'          <div class="col-sm-12">'
-        +               this.buildButton("submit", "success", "Valider création")
+        +               this.buildButton("button", "success", "Valider création", "main.submitNewUser()")
         +'          </div>'
         +'      </div>'
         +'  </form>'
         $(this.container).append( form);
+    },
+
+    submitNewUser : function(){
+        var self = this;
+        var form = $("#form_new_user");
+        prenom = form.find( "input[name='first_name']" ).val();
+        nom    = form.find( "input[name='last_name']" ).val();
+        mail   = form.find( "input[name='email']" ).val();
+        pwd    = form.find( "input[name='pass']" ).val();
+
+        if (!prenom || !nom || !mail || !pwd) {
+            main.addAlert("Formulaire non complet", "danger");
+            return;
+        }
+
+        if ( !main.isEmail( mail)){
+            main.addAlert("Adresse email non valide", "danger");
+            return;
+        } 
+
+        var data = { firstName : prenom, lastName : nom, email : mail, password : pwd};
+        var newUser = new Ajax( "users.json", data, "post"); 
+        newUser.onSuccess = function( data){ main.addAlert("Utilisateur ajouté avec succès", "success", "main.openAdmin()"); };
+        newUser.onError = function( data){  main.addAlert("Utilisateur non ajouté", "danger"); };
+        newUser.call();
     },
 
     buildCorpStat : function(){
@@ -74,7 +103,7 @@ var AdminManager = Class({
                 +'      <div class="panel panel-default">'
                 +'          <div class="panel-heading">'
                 +'              <h4 class="panel-title">'
-                +'                  <a data-toggle="collapse" href="#buildCollapseOne_' + this.users[i].id +'">' + this.users[i].firstName + ' ' + this.users[i].name + ' </a>'
+                +'                  <a data-toggle="collapse" href="#buildCollapseOne_' + this.users[i].id +'">' + this.users[i].first_name + ' ' + this.users[i].last_name + ' </a>'
                 +'              </h4>'
                 +'          </div>'
                 +'      <div id="buildCollapseOne_' + this.users[i].id +'" class="panel-collapse collapse out">';
@@ -92,10 +121,11 @@ var AdminManager = Class({
         user.name      = user.name      || "";
         user.email     = user.email     || "";
             info +='<div class="panel-body">'
-                 +'     <form class="form-horizontal" role="form">'
-                 +          this.buildInput("firstName", user.firstName, "Prénom", true)
-                 +          this.buildInput("name",      user.name,      "Nom",    true)
-                 +          this.buildInput("email",     user.email,     "Email",  true)
+                 +'     <form class="form-horizontal" method="post" role="form" onsubmit="main.submitModifUser(this); return false;">'
+                 +'         <div style="display:none">' + this.buildInput("id", user.id, "Id", true) + '</div>'
+                 +          this.buildInput("first_name", user.first_name, "Prénom", true)
+                 +          this.buildInput("last_name",  user.last_name,  "Nom",    true)
+                 +          this.buildInput("email",      user.email,      "Email",  true)
                  +'         <div class="btn-group">'
                  +              this.buildButton("submit", "success", "Valider modification")
                  +              this.buildButton("reset",  "primary", "Annuler")
@@ -107,6 +137,31 @@ var AdminManager = Class({
         return info;
     },
 
+    submitModifUser : function(event){
+        var form = $(event);
+        id     = form.find( "input[name='id']" ).val();
+        prenom = form.find( "input[name='first_name']" ).val();
+        nom    = form.find( "input[name='last_name']" ).val();
+        mail   = form.find( "input[name='email']" ).val();
+        pwd    = form.find( "input[name='pass']" ).val();
+
+        if (!prenom || !nom || !mail || !id || !pwd) {
+            main.addAlert("Formulaire non complet", "danger");
+            return;
+        }
+
+        if ( !main.isEmail( mail)){
+            main.addAlert("Adresse email non valide", "danger");
+            return;
+        } 
+
+        var data = { id : id, firstName : prenom, lastName : nom, email : mail, password : pwd};
+        var newUser = new Ajax( "users.json", data, "post"); 
+        newUser.onSuccess = function( data){ main.addAlert("Utilisateur modifié avec succès", "success", "main.openAdmin()"); };
+        newUser.onError = function( data){  main.addAlert("Utilisateur non modifié", "danger"); };
+        newUser.call();
+    },
+
     buildButton : function(type, color, text, onclick){
         var type    = type    || "button";
         var onclick = onclick || "";
@@ -115,7 +170,7 @@ var AdminManager = Class({
 
     buildInput : function(id, value, placeholder, isFormGroup, type){
         var type = type || "text";
-        var input = '<input type="'+type+'" class="form-control" id="'+id+'" value="'+value+'" placeholder="'+placeholder+'">';
+        var input = '<input type="'+type+'" class="form-control" id="'+id+'" name="'+id+'" value="'+value+'" placeholder="'+placeholder+'">';
         return isFormGroup ? '<div class="form-group">' + input + '</div>' : input;
     },
 

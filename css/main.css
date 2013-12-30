@@ -1,4 +1,8 @@
-
+.overflowAlert{
+	position : fixed;
+	top : 100px;
+	text-align: center;
+}
 
 /* ==========================================================================
    Author's custom styles

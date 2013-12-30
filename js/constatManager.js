@@ -1,5 +1,5 @@
 var ConstatManager = Class({
-    container      : "#container",
+    container      : config.container,
     markdownEditor : null,
     constats       : [ // : Array
     	{ id : 1, clientId : 1, clientName : "Constat1", 
@@ -29,6 +29,27 @@ var ConstatManager = Class({
 
     openConstats : function () { 
         $(this.container).empty();
+
+        var Dpost = { firstName: "Geoffrey", lastName: "Noel", email: "nono@test.com", password: "coucou" };
+
+        var req = new Ajax( "users.json", Dpost, "post");
+        //var req = new Ajax( "users/"+2+".json", null, "get"); 
+        req.onSuccess = function( data){
+            console.log( "Success");
+            console.log( data);
+        };
+
+        req.onError = function( data){
+            console.log( "Error");
+            console.log( data);
+        };
+
+        req.onAlways = function( data){
+            console.log( "Always");
+            console.log( data);
+        }
+        //req.call();
+
         this.buildConstatList();
     },
 

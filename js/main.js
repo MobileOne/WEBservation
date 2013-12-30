@@ -1,5 +1,6 @@
 var Main = Class({
-	constatManager : null,
+	container      : config.container,
+    constatManager : null,
     clientManager  : null,
     adminManager   : null,
 
@@ -37,6 +38,31 @@ var Main = Class({
 
     saveMarkdown : function(){
         this.constatManager.saveMarkdown();
+    },
+
+    submitNewUser : function(){
+        this.adminManager.submitNewUser();
+    },
+
+    submitModifUser : function( e){
+        this.adminManager.submitModifUser(e);
+    },
+
+    addAlert : function( text, type, onClose){
+        var text    = text    || "";
+        var type    = type    || "success"
+        var onClose = onClose || ""
+        var alert = '   <div class="col-xs-10 alert alert-'+type+' alert-dismissable overflowAlert">'
+                    +'      <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="'+onClose+'">&times;</button>'
+                    +'      <strong>' + text + '</strong>'
+                    +'  </div>'
+        $(this.container).append( alert);            
+    },
+
+    isEmail : function( email){
+        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        if(!emailReg.test(email)) return false;
+        else return true;
     }
 });
 var main = new Main();

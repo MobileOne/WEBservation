@@ -1,5 +1,5 @@
 var ClientManager = Class({
-    container : "#container",
+    container : config.container,
     clients : [ // : Array
     	{ id : 1, name : "Nono", 
             constats : [
