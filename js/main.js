@@ -1,17 +1,28 @@
 var Main = Class({
 	container      : config.container,
+    navBar         : config.navBar,
     constatManager : null,
     clientManager  : null,
     adminManager   : null,
+    loginManager   : null,
 
     initialize : function () { 
-    	this.constatManager = new ConstatManager();
+        this.constatManager = new ConstatManager();
         this.clientManager  = new ClientManager();
         this.adminManager   = new AdminManager();
+        this.loginManager   = new LoginManager();
     },
 
-    openConstats : function () {
-    	this.constatManager.openConstats();
+    deconnexion : function () { 
+        session = {};
+    },
+
+    openConstats : function ( userName) {
+    	this.constatManager.openConstats( userName);
+    },
+
+    openLoginPage : function(){
+        this.loginManager.openLoginPage();
     },
 
     editConstat : function ( id) {
@@ -20,6 +31,14 @@ var Main = Class({
 
     openClientsList : function () {
         this.clientManager.openClientsList();
+    },
+
+    buildClientsList : function( clients){
+        this.clientManager.buildClientsList( clients);
+    },
+
+    buildConstatsForAClient : function( clientId){
+        this.clientManager.buildConstatsForAClient( clientId);
     },
 
     openAdmin : function () {
@@ -40,8 +59,16 @@ var Main = Class({
         this.constatManager.saveMarkdown();
     },
 
-    submitNewUser : function(){
-        this.adminManager.submitNewUser();
+    submitNewUser : function( formId, idCorp){
+        this.adminManager.submitNewUser( formId, idCorp);
+    },
+
+    submitNewCorp : function( formId){
+        this.loginManager.submitNewCorp( formId);
+    },
+
+    submitLogin : function( formId){
+        this.loginManager.submitLogin( formId);
     },
 
     submitModifUser : function( e){
@@ -61,8 +88,44 @@ var Main = Class({
 
     isEmail : function( email){
         var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-        if(!emailReg.test(email)) return false;
+        if(!emailReg.test(email)) { this.addAlert("Adresse email non valide", "danger");  return false; }
         else return true;
-    }
+    },
+
+    isFormValid : function( tab){
+        var bool = false;
+        for(var i = 0; i < tab.length; i++) bool = bool || !tab[i];
+        if ( bool) { main.addAlert("Formulaire non complet", "danger"); return false; }
+        else return true;
+    },
+
+    buildButton : function(type, color, text, onclick){
+        var type    = type    || "button";
+        var onclick = onclick || "";
+        return '<button type="'+type+'" class="btn btn-'+color+'" onclick="'+onclick+'">'+text+'</button>'
+    },
+
+    buildInput : function(id, value, placeholder, isFormGroup, type, classes){
+        var type    = type    || "text";
+        var classes = classes || "";
+        var input = '<input type="'+type+'" class="form-control" id="'+id+'" name="'+id+'" value="'+value+'" placeholder="'+placeholder+'">';
+        return isFormGroup ? '<div class="form-group ' + classes + '">' + input + '</div>' : input;
+    },
+
+    buildNavBar : function( vider, userName){
+        if (vider) { $(this.navBar).empty(); return; }
+        if ( !$(this.navBar).is(':empty')  ) return;
+        var nav = ''
+        +'  <ul class="nav navbar-nav">'
+        +'      <li><a href="#constats" onclick="main.openConstats()"   >Constats</a></li>'
+        +'      <li><a href="#clients"  onclick="main.openClientsList()">Clients</a></li>'
+        +'      <li><a href="#admin"    onclick="main.openAdmin()"      >Administration</a></li>'
+        +'  </ul>'
+        +'  <form class="navbar-form navbar-right">'
+        +'      <a class="navbar-brand" href="#" style="padding-bottom:0px; padding-top:0px; line-height:30px">'+userName+'</a>'
+        +'      <button type="button" class="btn btn-danger" onclick="main.deconnexion(); main.openLoginPage()" >Déconnexion</button>'
+        +'  </form>'
+        $(this.navBar).append( nav)
+    },
 });
 var main = new Main();

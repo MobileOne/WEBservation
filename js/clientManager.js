@@ -1,6 +1,7 @@
 var ClientManager = Class({
     container : config.container,
-    clients : [ // : Array
+    clients : null,
+    /*[ // : Array
     	{ id : 1, name : "Nono", 
             constats : [
                 {id : 1, name : "test1" },
@@ -11,7 +12,33 @@ var ClientManager = Class({
     	{ id : 2, name : "Fred" },
         { id : 3, name : "Sainto" },
         { id : 4, name : "Sapin" }
-    ],
+
+
+
+
+        [{  id : 2, 
+            date : "2013-12-28T14:38:36-0500", 
+            description : "Description A", 
+            user : {
+                id:1, 
+                first_name: "testFqsdqsdqsdirstName", 
+                last_name : "qsdqtestLaqsdqsdstName",
+                email     : "testEmail",
+                password  : "testPdqsdass"
+            }
+        },
+        {   id : 1, 
+            date : "2013-12-28T14:38:11-0500",
+            description : "Description B",
+            user : {
+                id : 1,
+                first_name : "testFqsdqsdqsdirstName",
+                last_name  :"qsdqtestLaqsdqsdstName",
+                email : "testEmail",
+                password : "testPdqsdass"
+            }
+        }]
+    ], */
 
     initialize : function () { 
     },
@@ -19,7 +46,18 @@ var ClientManager = Class({
     openClientsList : function(){
         $(this.container).empty();
         this.buildAddClientForm();
-        this.buildClientsList();
+        this.getClientsList();
+        //this.buildClientsList();
+    },
+
+    getClientsList : function(){
+        //var d = { name : corp };
+        var clientList = new Ajax( "customers.json", null, "get"); 
+        clientList.onSuccess = function( data){ 
+            main.buildClientsList( data.customers); 
+        };
+        clientList.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
+        clientList.call();
     },
 
     buildAddClientForm : function(){
@@ -38,29 +76,64 @@ var ClientManager = Class({
         $(this.container).append( form);
     },
 
-    buildClientsList : function(){
+    buildClientsList : function( clients){
+        this.clients = clients;
         $(this.container).append( '<h2>Liste des clients</h2>');
 
-        for (var i = 0; i < this.clients.length; i++){
+
+/*****************************************************
+
+Problème d'asynchrone, une fois qu'on a tous les clients, 
+il faut faire un get report from client id qui nous retourne 
+tous les report d'un client avec aussi les infos du clients 
+( et de l'user créateur)
+
+******************************************************/
+
+
+
+        for (var i = 0; i < clients.length; i++){
             var a   ='  <div class="panel-group" id="clientCollapse">'
                 +'      <div class="panel panel-default">'
                 +'          <div class="panel-heading">'
                 +'              <h4 class="panel-title">'
-                +'                  <a data-toggle="collapse" data-parent="buildCollapse_' + this.clients[i].id +'" href="#buildCollapseOne_' + this.clients[i].id +'"> ' + this.clients[i].name + ' </a>'
+                +'                  <a data-toggle="collapse" data-parent="buildCollapse_' + clients[i].id +'" href="#buildCollapseOne_' + clients[i].id +'"> ' + clients[i].first_name + ' </a>'
                 +'              </h4>'
                 +'          </div>'
-                +'      <div id="buildCollapseOne_' + this.clients[i].id +'" class="panel-collapse collapse out">';
-                a += this.buildConstatsForAClient( this.clients[i].id);
+                +'      <div id="buildCollapseOne_' + clients[i].id +'" class="panel-collapse collapse out">';
+                a += main.buildConstatsForAClient( clients[i].id);
                 a +='      </div>'
                 +'  </div>'
             $(this.container).append( a);
+            console.log( main.buildConstatsForAClient( clients[i].id))
         }
     },
 
     buildConstatsForAClient : function( id){
-        var client = this.getClientById(id);         
-        var constat ="";
-        if(!client.constats) return constat;
+        //var client = this.getClientById(id);         
+        
+
+        var reportList = new Ajax( "customers/"+id+"/report.json", null, "get"); 
+        reportList.onSuccess = function( data){ 
+            //console.log( data[0]);
+            var constat ="";
+            for (var i = 0; i < data.length; i++){
+                //console.log( data[i].id);
+                //debugger
+            constat +='<div class="panel-body">'
+                     +' <div onclick="main.editConstat('+data[i].id+')">'+data[i].id+'</div> '
+                     +'  '
+                     +'  '
+                     +'</div>'  
+                     
+            }
+            console.log( constat)
+            return constat;
+        };
+        reportList.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
+        reportList.call();
+
+       /* if(!client.constats) return constat;
         for (var i = 0; i < client.constats.length; i++){
             constat +='<div class="panel-body">'
                      +' <div onclick="main.editConstat('+client.constats[i].id+')">'+client.constats[i].name+'</div> '
@@ -68,7 +141,7 @@ var ClientManager = Class({
                      +'  '
                      +'</div>'  
         }
-        return constat;
+        return constat;*/
     },
 
     getClientById : function (id) { 

@@ -1,7 +1,7 @@
 var AdminManager = Class({
     container : config.container,
     users     : null,
-    corp      : { id : 1, name : "Nono Corporation",  discUsage : 50, email : "nono@nonocorp.com"},
+    corp      : { id : 1, name : "Nono Corporation"},
 
     initialize : function () {},
 
@@ -28,38 +28,33 @@ var AdminManager = Class({
         var form = ''
         +'  <h2>Ajouter un utilisateur</h2>'
         +'  <form class="form-inline" role="form" method="post" id="form_new_user">'
-        +       this.buildInput("first_name", "", "Prénom",       true)
-        +       this.buildInput("last_name",  "", "Nom",          true)
-        +       this.buildInput("email",      "", "Email",        true, "email")
-        +       this.buildInput("pass",       "", "Mot de passe", true, "password")
+        +       main.buildInput("first_name", "", "Prénom",       true)
+        +       main.buildInput("last_name",  "", "Nom",          true)
+        +       main.buildInput("email",      "", "Email",        true, "email")
+        +       main.buildInput("pass",       "", "Mot de passe", true, "password")
         +'      <div class="form-group col-sm-12">'
         +'          <div class="col-sm-12">'
-        +               this.buildButton("button", "success", "Valider création", "main.submitNewUser()")
+        +               main.buildButton("button", "success", "Valider création", "main.submitNewUser('#form_new_user')")
         +'          </div>'
         +'      </div>'
         +'  </form>'
         $(this.container).append( form);
     },
 
-    submitNewUser : function(){
-        var self = this;
-        var form = $("#form_new_user");
+    submitNewUser : function(formId, idCorp){
+        var self   = this;
+        var form   = formId ? $(formId) : $("#form_new_user");
+        var idCorp = idCorp ? idCorp : 1;
+
         prenom = form.find( "input[name='first_name']" ).val();
         nom    = form.find( "input[name='last_name']" ).val();
         mail   = form.find( "input[name='email']" ).val();
         pwd    = form.find( "input[name='pass']" ).val();
 
-        if (!prenom || !nom || !mail || !pwd) {
-            main.addAlert("Formulaire non complet", "danger");
-            return;
-        }
+        if ( !main.isFormValid([prenom, nom, mail, pwd])) return;
+        if ( !main.isEmail( mail)) return;
 
-        if ( !main.isEmail( mail)){
-            main.addAlert("Adresse email non valide", "danger");
-            return;
-        } 
-
-        var data = { firstName : prenom, lastName : nom, email : mail, password : pwd};
+        var data = { firstName : prenom, lastName : nom, email : mail, password : pwd, companyId  : idCorp };
         var newUser = new Ajax( "users.json", data, "post"); 
         newUser.onSuccess = function( data){ main.addAlert("Utilisateur ajouté avec succès", "success", "main.openAdmin()"); };
         newUser.onError = function( data){  main.addAlert("Utilisateur non ajouté", "danger"); };
@@ -81,12 +76,10 @@ var AdminManager = Class({
         +'      <div id="corpStat" class="panel-collapse collapse out">'
         +'          <div class="panel-body">'
         +'              <form class="form-horizontal" role="form">'
-        +                   this.buildInput("name",  this.corp.name,  "Nom de la société", true)
-        +                   this.buildInput("email", this.corp.email, "Email",             true)
+        +                   main.buildInput("name",  this.corp.name,  "Nom de la société", true)
         +'                  <div class="btn-group">'
-        +                       this.buildButton("submit", "success", "Valider modification")
-        +                       this.buildButton("reset", "primary", "Annuler")
-        +                       this.buildButton("button", "warning", "Réinitialiser mot de passe")
+        +                       main.buildButton("submit", "success", "Valider modification")
+        +                       main.buildButton("reset", "primary", "Annuler")
         +'                  </div>'
         +'              </form>'
         +'          </div>'
@@ -122,15 +115,15 @@ var AdminManager = Class({
         user.email     = user.email     || "";
             info +='<div class="panel-body">'
                  +'     <form class="form-horizontal" method="post" role="form" onsubmit="main.submitModifUser(this); return false;">'
-                 +'         <div style="display:none">' + this.buildInput("id", user.id, "Id", true) + '</div>'
-                 +          this.buildInput("first_name", user.first_name, "Prénom", true)
-                 +          this.buildInput("last_name",  user.last_name,  "Nom",    true)
-                 +          this.buildInput("email",      user.email,      "Email",  true)
+                 +'         <div style="display:none">' + main.buildInput("id", user.id, "Id", true) + '</div>'
+                 +          main.buildInput("first_name", user.first_name, "Prénom", true)
+                 +          main.buildInput("last_name",  user.last_name,  "Nom",    true)
+                 +          main.buildInput("email",      user.email,      "Email",  true)
                  +'         <div class="btn-group">'
-                 +              this.buildButton("submit", "success", "Valider modification")
-                 +              this.buildButton("reset",  "primary", "Annuler")
-                 +              this.buildButton("button", "warning", "Réinitialiser mot de passe")
-                 +              this.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
+                 +              main.buildButton("submit", "success", "Valider modification")
+                 +              main.buildButton("reset",  "primary", "Annuler")
+                 +              main.buildButton("button", "warning", "Réinitialiser mot de passe")
+                 +              main.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
                  +'         </div>'
                  +'     </form>'
                  +'</div>' 
@@ -160,18 +153,6 @@ var AdminManager = Class({
         newUser.onSuccess = function( data){ main.addAlert("Utilisateur modifié avec succès", "success", "main.openAdmin()"); };
         newUser.onError = function( data){  main.addAlert("Utilisateur non modifié", "danger"); };
         newUser.call();
-    },
-
-    buildButton : function(type, color, text, onclick){
-        var type    = type    || "button";
-        var onclick = onclick || "";
-        return '<button type="'+type+'" class="btn btn-'+color+'" onclick="'+onclick+'">'+text+'</button>'
-    },
-
-    buildInput : function(id, value, placeholder, isFormGroup, type){
-        var type = type || "text";
-        var input = '<input type="'+type+'" class="form-control" id="'+id+'" name="'+id+'" value="'+value+'" placeholder="'+placeholder+'">';
-        return isFormGroup ? '<div class="form-group">' + input + '</div>' : input;
     },
 
     getUserById : function (id) { 

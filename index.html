@@ -22,7 +22,8 @@
 
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
-    <body>
+    <body onload="main.openClientsList()">
+     <!-- <body onload="main.openLoginPage()"> -->
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -33,43 +34,12 @@
           </button>
           <a class="navbar-brand" href="#">WEBservation</a>
         </div>
+        <div class="navbar-collapse collapse" id="navBar"></div>
       </div>
     </div>
 
     <div class="jumbotron" >
-      <div class="container">
-        <h1>Bienvenue sur WEBservation</h1>
-
-        <p>Se connecter</p>
-        <form class="form-inline" role="form">
-          <div class="form-group">
-            <input type="email" class="form-control" id="connect_email" placeholder="Email">
-          </div>
-          <div class="form-group">
-            <input type="password" class="form-control" id="connect_pass" placeholder="Mot de passe">
-          </div>
-          <button type="submit" class="btn btn-success">Connexion</button>
-        </form>
-
-        <hr/>
-        <p>Créer un nouveau compte</p>
-        <form class="form-horizontal" role="form">
-          <div class="form-group col-sm-12">
-            <input type="text"     class="form-control" id="create_name"  placeholder="Nom de société">
-          </div>
-          <div class="form-group col-sm-12">
-            <input type="email"    class="form-control" id="create_email" placeholder="Email">
-          </div>
-          <div class="form-group col-sm-12">
-            <input type="password" class="form-control" id="create_pass"  placeholder="Password">
-          </div>
-          <div class="form-group">
-            <div class="col-sm-12">
-              <button type="submit" class="btn btn-success">Valider inscription</button>
-            </div>
-          </div>
-        </form>
-      </div>
+      <div class="container" id="container"></div>
     </div>
 
        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
@@ -83,6 +53,11 @@
         <script src="js/constatManager.js"></script>
         <script src="js/clientManager.js"></script>
         <script src="js/adminManager.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/loginPageManager.js"></script>
+        <script src="js/main.js"></script> 
+
+        <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZxyLjeJ9MKPa9gBz9Bg66VcXRsQ3nKLA&sensor=false">
+    </script>
     </body>
 </html>

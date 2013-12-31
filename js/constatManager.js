@@ -27,7 +27,8 @@ var ConstatManager = Class({
     initialize : function () { 
     },
 
-    openConstats : function () { 
+    openConstats : function ( userName) { 
+        main.buildNavBar( false, userName);
         $(this.container).empty();
 
         var Dpost = { firstName: "Geoffrey", lastName: "Noel", email: "nono@test.com", password: "coucou" };
@@ -68,8 +69,7 @@ var ConstatManager = Class({
     editConstat : function (id) {
         var constat = this.getConstatById( id);
         if (!constat){
-            $('#alert_text').text("Erreur : Constat indisponible")
-           $('#alert').modal()
+            main.addAlert("Constat non disponnible", "danger");
             return "";
         }
         $(this.container).empty();
