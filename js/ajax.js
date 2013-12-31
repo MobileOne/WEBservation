@@ -20,6 +20,6 @@ var Ajax = Class({
     },
 
     onSuccess : function ( data) {}, // A implémenter selon besoin
-    onError   : function ( data) {}, // A implémenter selon besoin
+    onError   : function ( data) { main.addAlert("Une erreur s'est produite", "danger"); }, // A implémenter selon besoin
     onAlways  : function ( data) {}  // A implémenter selon besoin
 });

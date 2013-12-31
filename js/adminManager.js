@@ -27,14 +27,14 @@ var AdminManager = Class({
     buildNewUsherForm : function(){
         var form = ''
         +'  <h2>Ajouter un utilisateur</h2>'
-        +'  <form class="form-inline" role="form" method="post" id="form_new_user">'
+        +'  <form class="form-inline" role="form" method="post" id="form_new_user" onsubmit="main.submitNewUser(\'#form_new_user\'); return false;">'
         +       main.buildInput("first_name", "", "Prénom",       true)
         +       main.buildInput("last_name",  "", "Nom",          true)
         +       main.buildInput("email",      "", "Email",        true, "email")
         +       main.buildInput("pass",       "", "Mot de passe", true, "password")
         +'      <div class="form-group col-sm-12">'
         +'          <div class="col-sm-12">'
-        +               main.buildButton("button", "success", "Valider création", "main.submitNewUser('#form_new_user')")
+        +               main.buildButton("submit", "success", "Valider création")
         +'          </div>'
         +'      </div>'
         +'  </form>'
@@ -44,7 +44,7 @@ var AdminManager = Class({
     submitNewUser : function(formId, idCorp){
         var self   = this;
         var form   = formId ? $(formId) : $("#form_new_user");
-        var idCorp = idCorp ? idCorp : 1;
+        var idCorp = session.getItem("corpId");
 
         prenom = form.find( "input[name='first_name']" ).val();
         nom    = form.find( "input[name='last_name']" ).val();

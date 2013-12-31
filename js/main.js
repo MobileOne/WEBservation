@@ -6,6 +6,10 @@ var Main = Class({
     adminManager   : null,
     loginManager   : null,
 
+    autologin : function(){
+        this.loginManager.submitLogin( null, "aa@aa.aa", "aa");
+    },
+
     initialize : function () { 
         this.constatManager = new ConstatManager();
         this.clientManager  = new ClientManager();
@@ -14,11 +18,16 @@ var Main = Class({
     },
 
     deconnexion : function () { 
-        session = {};
+        //session = {};
+        sessionStorage.clear();
     },
 
     openConstats : function ( userName) {
-    	this.constatManager.openConstats( userName);
+        this.constatManager.openConstats( userName);
+    },
+
+    openConstat : function ( constat) {
+        this.constatManager.openConstat( constat);
     },
 
     openLoginPage : function(){
@@ -37,12 +46,12 @@ var Main = Class({
         this.clientManager.buildClientsList( clients);
     },
 
-    buildConstatsForAClient : function( clientId){
-        this.clientManager.buildConstatsForAClient( clientId);
-    },
-
     openAdmin : function () {
         this.adminManager.openAdmin();
+    },
+
+    submitNewClient : function( that){
+        this.clientManager.submitNewClient( that);
     },
 
     buildMap : function (type, elt) {
@@ -67,8 +76,8 @@ var Main = Class({
         this.loginManager.submitNewCorp( formId);
     },
 
-    submitLogin : function( formId){
-        this.loginManager.submitLogin( formId);
+    submitLogin : function( formId, autoMail, autoPwd){
+        this.loginManager.submitLogin( formId, autoMail, autoPwd);
     },
 
     submitModifUser : function( e){

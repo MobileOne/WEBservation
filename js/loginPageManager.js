@@ -16,10 +16,10 @@ var LoginManager = Class({
     buildLoginForm : function(){
         var log = ''
         +'  <p>Se connecter</p>'
-        +'  <form class="form-inline" role="form" id="formLogin">'
+        +'  <form class="form-inline" role="form" id="formLogin" onsubmit="main.submitLogin(\'#formLogin\'); return false;">'
         +       main.buildInput("email", "", "Email",        true)
         +       main.buildInput("pass",  "", "Mot de passe", true, "password")
-        +'      <button type="button" class="btn btn-success" onclick="main.submitLogin(\'#formLogin\')">Connexion</button>'
+        +'      <button type="submit" class="btn btn-success">Connexion</button>'
         +'  </form>'
         $(this.container).append( log);
     },
@@ -28,13 +28,13 @@ var LoginManager = Class({
         var corp = ''
         +'  <hr/>'
         +'  <p>Créer d\'une société avec premier compte utilisateur</p>'
-        +'  <form class="form-horizontal" role="form" id="formNewCorp">'
+        +'  <form class="form-horizontal" role="form" id="formNewCorp" onsubmit="main.submitNewCorp(\'#formNewCorp\'); return false;">'
         +       main.buildInput("new_corp_name", "", "Nom de la nouvelle société", true, "text", "col-sm-12")
         +       main.buildInput("first_name", "", "Prénom utilisateur", true, "text", "col-sm-12")
         +       main.buildInput("last_name", "", "Nom utilisateur", true, "text", "col-sm-12")
         +       main.buildInput("email", "", "Email", true, "text", "col-sm-12")
         +       main.buildInput("pass", "", "Password", true, "password", "col-sm-12")
-        +'      <button type="button" class="btn btn-success" onclick="main.submitNewCorp(\'#formNewCorp\')">Valider inscription</button>'
+        +'      <button type="submit" class="btn btn-success" >Valider inscription</button>'
         +'  </form>'
 
         $(this.container).append( corp);
@@ -60,20 +60,21 @@ var LoginManager = Class({
             var newUser = new Ajax( "users.json", d, "post");
             newUser.onSuccess = function( data){ 
                 main.addAlert("Société et utilisateur ajoutés avec succès - Veuillez vous connecter", "success"); 
+                main.submitLogin( null, mail, pwd);
             };
-            newUser.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
+            //newUser.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
             newUser.call(); 
         };
-        newCorp.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
+        //newCorp.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
         newCorp.call();
     },
 
     submitLogin : function(formId, autoMail, autoPwd){
         var self = this;
         var form = formId ? $(formId) : $("#formLogin");
-        debugger
-        mail   = autoMail || form.find( "input[name='email']" ).val();
-        pwd    = autoPwd  || form.find( "input[name='pass']" ).val();
+
+        mail = autoMail || form.find( "input[name='email']" ).val();
+        pwd  = autoPwd  || form.find( "input[name='pass']" ).val();
 
         if ( !main.isFormValid([mail, pwd])) return;
         if ( !main.isEmail( mail)) return;
@@ -83,9 +84,10 @@ var LoginManager = Class({
         newCorp.onSuccess = function( data){ 
             if (!data) main.addAlert("Informations d'identification non valides", "danger"); 
             else {
-                session.corpId = data.company.id;
-                session.userId = data.id;
                 var userName = data.first_name + " " + data.last_name;
+                session.setItem("corpId",   data.company.id);
+                session.setItem("userId",   data.id);
+                session.setItem("userName", userName);
                 main.openConstats( userName);
             }
         };

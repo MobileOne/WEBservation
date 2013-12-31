@@ -24,33 +24,37 @@ var ConstatManager = Class({
     	{ id : 9, clientId : 9, clientName : "Constat9" }
     ],
 
+
+/*
+{ "id":3, 
+    "date":"2013-12-30T16:08:36-0500",
+    "description":"testDescription ",
+    "position_x":15,
+    "position_y":20,
+    "user":{
+        "id":88,
+        "first_name":"Bastien",
+        "last_name":"Poidevain",
+        "email":"testMail13@test.com",
+        "company":{
+            "id":1,
+            "name":"testCompanyName"
+        }
+    },
+    "customer":{
+        "id":1,
+        "first_name":
+        "testFirstNameCustomer",
+        "last_name":"testLastNameCustomer"
+    }
+}*/
+
     initialize : function () { 
     },
 
     openConstats : function ( userName) { 
         main.buildNavBar( false, userName);
         $(this.container).empty();
-
-        var Dpost = { firstName: "Geoffrey", lastName: "Noel", email: "nono@test.com", password: "coucou" };
-
-        var req = new Ajax( "users.json", Dpost, "post");
-        //var req = new Ajax( "users/"+2+".json", null, "get"); 
-        req.onSuccess = function( data){
-            console.log( "Success");
-            console.log( data);
-        };
-
-        req.onError = function( data){
-            console.log( "Error");
-            console.log( data);
-        };
-
-        req.onAlways = function( data){
-            console.log( "Always");
-            console.log( data);
-        }
-        //req.call();
-
         this.buildConstatList();
     },
 
@@ -68,12 +72,25 @@ var ConstatManager = Class({
 
     editConstat : function (id) {
         var constat = this.getConstatById( id);
-        if (!constat){
-            main.addAlert("Constat non disponnible", "danger");
-            return "";
-        }
+
+
+        var getReport = new Ajax( "reports/"+id+".json", null, "get"); 
+        getReport.onSuccess = function( data){ 
+            if (!data) { main.addAlert("Constat non disponible", "danger"); return; }
+            main.openConstat( data);
+        };
+        getReport.call();
+
+        return;
+    },
+
+    openConstat : function ( constat) {
+        console.log( constat); return;
+        if (!constat) return "";
+
         $(this.container).empty();
-        $(this.container).append( "<h2>" + constat.clientName + "</h2>");
+        $(this.container).append( "<h2>" + constat.title + "</h2>");
+        //$(this.container).append( "<h3>" + constat.customer.first_name +  "</h3>");
 
         $(this.container).append( '<form class="form-horizontal" role="form">');
 
