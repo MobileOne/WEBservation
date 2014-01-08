@@ -7,7 +7,7 @@ var Main = Class({
     loginManager   : null,
 
     autologin : function(){
-        this.loginManager.submitLogin( null, "aa@aa.aa", "aa");
+        this.loginManager.submitLogin( null, "nono@nono.fr", "nono");
     },
 
     initialize : function () { 
@@ -64,6 +64,10 @@ var Main = Class({
         this.adminManager.deleteUser(id);
     },
 
+    deleteCompagnie : function( id){
+        this.adminManager.deleteCompagnie(id);
+    },
+
     saveMarkdown : function(){
         this.constatManager.saveMarkdown();
     },
@@ -82,6 +86,10 @@ var Main = Class({
 
     submitModifUser : function( e){
         this.adminManager.submitModifUser(e);
+    },
+
+    submitModifCompany : function( e){
+        this.adminManager.submitModifCompany(e);
     },
 
     addAlert : function( text, type, onClose){
@@ -106,6 +114,10 @@ var Main = Class({
         for(var i = 0; i < tab.length; i++) bool = bool || !tab[i];
         if ( bool) { main.addAlert("Formulaire non complet", "danger"); return false; }
         else return true;
+    },
+
+    getFormData : function(form, name){
+        return form.find( "input[name="+name+"]" ).val().toString();
     },
 
     buildButton : function(type, color, text, onclick){

@@ -27,7 +27,7 @@ var LoginManager = Class({
     buildNewCorpForm : function(){
         var corp = ''
         +'  <hr/>'
-        +'  <p>Créer d\'une société avec premier compte utilisateur</p>'
+        +'  <p>Création d\'une société avec premier compte utilisateur</p>'
         +'  <form class="form-horizontal" role="form" id="formNewCorp" onsubmit="main.submitNewCorp(\'#formNewCorp\'); return false;">'
         +       main.buildInput("new_corp_name", "", "Nom de la nouvelle société", true, "text", "col-sm-12")
         +       main.buildInput("first_name", "", "Prénom utilisateur", true, "text", "col-sm-12")
@@ -62,10 +62,8 @@ var LoginManager = Class({
                 main.addAlert("Société et utilisateur ajoutés avec succès - Veuillez vous connecter", "success"); 
                 main.submitLogin( null, mail, pwd);
             };
-            //newUser.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
             newUser.call(); 
         };
-        //newCorp.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
         newCorp.call();
     },
 
@@ -85,9 +83,8 @@ var LoginManager = Class({
             if (!data) main.addAlert("Informations d'identification non valides", "danger"); 
             else {
                 var userName = data.first_name + " " + data.last_name;
-                session.setItem("corpId",   data.company.id);
                 session.setItem("userId",   data.id);
-                session.setItem("userName", userName);
+                session.setItem("userNameToDisplay", userName);
                 main.openConstats( userName);
             }
         };

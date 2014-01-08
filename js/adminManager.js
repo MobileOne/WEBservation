@@ -1,7 +1,7 @@
 var AdminManager = Class({
     container : config.container,
     users     : null,
-    corp      : { id : 1, name : "Nono Corporation"},
+    corp      : null,
 
     initialize : function () {},
 
@@ -9,18 +9,24 @@ var AdminManager = Class({
         var self = this;
         $(this.container).empty();
         this.buildNewUsherForm();
-        this.buildCorpStat();
 
-        var userList = new Ajax( "users.json", null, "get"); 
-        userList.onSuccess = function( data){ 
-            self.users = data.users;
-            self.buildUsersList();
-        };
+        var req = new Ajax( "users/"+session.getItem('userId')+".json", null, "get"); 
+        req.onSuccess = function( data){ self.corp = data.company; self.buildCorpStat(); 
 
-        userList.onError = function( data){
-            $(this.container).append( '<h2>Liste des utilisateurs</h2>');
-            $(this.container).append( 'Erreur de chargement');
+            self.aa();
+
         };
+        req.onError   = function( data){ main.addAlert("Problème au chargement de la société", "danger"); };
+        req.call();
+
+        
+    },
+
+    aa : function(){
+        var self = this;
+        var userList = new Ajax( "companies/"+this.corp.id+"/user.json", null, "get"); 
+        userList.onSuccess = function( data){ self.users = data; console.log( self.users); self.buildUsersList(); };
+        userList.onError   = function( data){ main.addAlert("Problème au chargement de la liste des utilisateurs", "danger"); };
         userList.call();
     },
 
@@ -44,7 +50,7 @@ var AdminManager = Class({
     submitNewUser : function(formId, idCorp){
         var self   = this;
         var form   = formId ? $(formId) : $("#form_new_user");
-        var idCorp = session.getItem("corpId");
+        var idCorp = this.corp.id;
 
         prenom = form.find( "input[name='first_name']" ).val();
         nom    = form.find( "input[name='last_name']" ).val();
@@ -63,7 +69,6 @@ var AdminManager = Class({
 
     buildCorpStat : function(){
         this.corp.name  = this.corp.name  || "";
-        this.corp.email = this.corp.email || "";
         var stat = ''
         +'  <h2>Information société</h2>'
         +'  <div class="panel-group" id="clientCollapse">'
@@ -75,11 +80,12 @@ var AdminManager = Class({
         +'          </div>'
         +'      <div id="corpStat" class="panel-collapse collapse out">'
         +'          <div class="panel-body">'
-        +'              <form class="form-horizontal" role="form">'
+        +'              <form class="form-horizontal" role="form" onsubmit="main.submitModifCompany(this); return false;">'
         +                   main.buildInput("name",  this.corp.name,  "Nom de la société", true)
         +'                  <div class="btn-group">'
         +                       main.buildButton("submit", "success", "Valider modification")
         +                       main.buildButton("reset", "primary", "Annuler")
+        +                       main.buildButton("button", "danger",  "Supprimer société", 'main.deleteCompagnie('+this.corp.id+')')
         +'                  </div>'
         +'              </form>'
         +'          </div>'
@@ -136,23 +142,28 @@ var AdminManager = Class({
         prenom = form.find( "input[name='first_name']" ).val();
         nom    = form.find( "input[name='last_name']" ).val();
         mail   = form.find( "input[name='email']" ).val();
-        pwd    = form.find( "input[name='pass']" ).val();
 
-        if (!prenom || !nom || !mail || !id || !pwd) {
-            main.addAlert("Formulaire non complet", "danger");
-            return;
-        }
+        if ( !main.isFormValid([prenom, nom, mail, id])) return;
+        if ( !main.isEmail( mail)) return;
 
-        if ( !main.isEmail( mail)){
-            main.addAlert("Adresse email non valide", "danger");
-            return;
-        } 
-
-        var data = { id : id, firstName : prenom, lastName : nom, email : mail, password : pwd};
-        var newUser = new Ajax( "users.json", data, "post"); 
+        var data = { firstName : prenom, lastName : nom, email : mail, password : pwd};
+        var newUser = new Ajax( "users/"+id+".json", data, "put"); 
         newUser.onSuccess = function( data){ main.addAlert("Utilisateur modifié avec succès", "success", "main.openAdmin()"); };
-        newUser.onError = function( data){  main.addAlert("Utilisateur non modifié", "danger"); };
+        newUser.onError   = function( data){ main.addAlert("Utilisateur non modifié", "danger"); };
         newUser.call();
+    },
+
+    submitModifCompany : function(event){
+        var form = $(event);
+        nom = main.getFormData( form, "name");
+
+        if ( !main.isFormValid([nom])) return;
+
+        var data = { name : nom};
+        var req = new Ajax( "companies/"+this.corp.id+".json", data, "put"); 
+        req.onSuccess = function( data){ main.addAlert("Société modifié avec succès", "success", "main.openAdmin()"); };
+        req.onError   = function( data){ main.addAlert("Société non modifié", "danger"); };
+        req.call();
     },
 
     getUserById : function (id) { 
@@ -163,7 +174,19 @@ var AdminManager = Class({
 
     deleteUser : function (id) { 
         if (!id || !confirm("Vraiment supprimer ?")) return;
-        console.warn( id + " 'deleteError' non implémentée");
+        var newUser = new Ajax( "users/"+id+".json", null, "delete"); 
+        newUser.onSuccess = function( data){ main.addAlert("Utilisateur supprimé avec succès", "success", "main.openAdmin()"); };
+        newUser.onError   = function( data){ main.addAlert("Utilisateur non supprimé", "danger"); };
+        newUser.call();
+    },
+
+    deleteCompagnie : function(id){
+        if (!id || !confirm("Supprimer la société?")) return;
+        if (!id || !confirm("Cela va également supprimer tous utilisateurs ainsi que les constats associés à cette société.\nVoulez-vous vraiment supprimer la société?")) return;
+        var newUser = new Ajax( "companies/"+id+".json", null, "delete"); 
+        newUser.onSuccess = function( data){ main.addAlert("Société supprimée avec succès", "success", "main.openAdmin()"); };
+        newUser.onError   = function( data){ main.addAlert("Société non supprimé", "danger"); };
+        newUser.call();
     }
 });
 

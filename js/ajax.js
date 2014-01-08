@@ -4,19 +4,29 @@ var Ajax = Class({
     data   : null,
     type   : null,
 
-    initialize : function ( url, data, type) { 
-        this.url  = this.apiUrl + url;
+    initialize : function ( serviceName, data, type) { 
+        this.url  = this.apiUrl + serviceName;
         if (data) this.data = JSON.stringify(data);
         this.type = type || "post";
     },
 
     call : function () { 
-        if (this.type != "post" && this.type != "get") throw 'Type de requête "' + this.type + '" non valide';
+        this.startLoading();
+        if (this.type != "post" && this.type != "get" && this.type != "put" && this.type != "delete") throw 'Type de requête "' + this.type + '" non valide';
         var self = this;
-        var request = this.type == "post" ? $.post( this.url , this.data) : $.get( this.url , this.data);
-        request.done(function( data )   { self.onSuccess( data) });
-        request.fail(function( data )   { self.onError( data)   });
-        request.always(function( data ) { self.onAlways( data)  });
+        var request = $.ajax({ type: this.type, url: this.url, data: this.data, timeout:config.timeout });
+        request.done(function( data )   { self.stopLoading(); self.onSuccess( data) });
+        request.fail(function( data )   { self.stopLoading(); self.onError( data)   });
+        request.always(function( data ) { self.stopLoading(); self.onAlways( data)  });
+    },
+
+    startLoading : function(){
+        var load = '<div id="loading" class="loading"><img src="img/loading.png"/><br/>Chargement</div>';
+        $(config.container).append(load);
+    },
+
+    stopLoading : function(){
+        $("#loading").remove();
     },
 
     onSuccess : function ( data) {}, // A implémenter selon besoin

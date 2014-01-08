@@ -16,7 +16,6 @@ var ClientManager = Class({
         clientList.onSuccess = function( data){ 
             main.buildClientsList( data.customers); 
         };
-        //clientList.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
         clientList.call();
     },
 
@@ -84,7 +83,6 @@ var ClientManager = Class({
             }
             $('#buildCollapseOne_' + id).append( constat);
         };
-        //reportList.onError = function( data){  main.addAlert("Une erreur s'est produite lors du chargement de la liste des constats", "danger"); };
         reportList.call();
     },
 
