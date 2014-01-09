@@ -18,7 +18,6 @@ var Main = Class({
     },
 
     deconnexion : function () { 
-        //session = {};
         sessionStorage.clear();
     },
 
@@ -115,6 +114,41 @@ var Main = Class({
         if ( bool) { main.addAlert("Formulaire non complet", "danger"); return false; }
         else return true;
     },
+
+    addBackSlash : function( str){
+        return this.encode( str);
+        /*
+        console.log( str.test(/'/));
+        str = str.replace(/'/, '_');
+        return str;*/
+    },
+
+    encode : function( str){
+        var tab = [];
+        var length = str.length;
+        for (var i = 0; i < length; i++)
+            tab.push( Math.pow( str.charCodeAt(i), 2) );
+        return tab;
+    },
+
+    decode : function( tab){
+        var str = "";
+        for (var i = 0; i < tab.length; i++)
+            str += String.fromCharCode( Math.sqrt(tab[i]) );
+        return str;
+    },
+
+
+
+    /*hasInvalidChar : function( tab){
+        var bool = false;
+        for(var i = 0; i < tab.length; i++){
+            //bool = bool || !tab[i];
+        } 
+        
+        if ( bool) { main.addAlert("Ce formulaire contient un ou des caractères interdits", "danger"); return false; }
+        else return true;
+    },*/
 
     getFormData : function(form, name){
         return form.find( "input[name="+name+"]" ).val().toString();

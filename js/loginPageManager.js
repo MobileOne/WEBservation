@@ -44,11 +44,11 @@ var LoginManager = Class({
         var self = this;
         var form = formId ? $(formId) : $("#formNewCorp");
 
-        corp   = form.find( "input[name='new_corp_name']" ).val();
-        prenom = form.find( "input[name='first_name']" ).val();
-        nom    = form.find( "input[name='last_name']" ).val();
-        mail   = form.find( "input[name='email']" ).val();
-        pwd    = form.find( "input[name='pass']" ).val();
+        corp   = main.getFormData( form, "new_corp_name");
+        prenom = main.getFormData( form, "first_name");
+        nom    = main.getFormData( form, "last_name");
+        mail   = main.getFormData( form, "email");
+        pwd    = main.getFormData( form, "pass");
 
         if ( !main.isFormValid([corp, prenom, nom, mail, pwd])) return;
         if ( !main.isEmail( mail)) return;
@@ -71,11 +71,19 @@ var LoginManager = Class({
         var self = this;
         var form = formId ? $(formId) : $("#formLogin");
 
-        mail = autoMail || form.find( "input[name='email']" ).val();
-        pwd  = autoPwd  || form.find( "input[name='pass']" ).val();
+        mail = autoMail || main.getFormData( form, "email");
+        pwd  = autoPwd  || main.getFormData( form, "pass");
+
+      /*  mail = main.addBackSlash( mail);
+        console.log( mail);
+        console.log( main.decode( mail));
+        return;*/
+
+
 
         if ( !main.isFormValid([mail, pwd])) return;
-        if ( !main.isEmail( mail)) return;
+        //if ( !main.hasInvalidChar([mail, pwd])) return;
+        if ( !main.isEmail( mail)) return;      
 
         var d = { email : mail, password : pwd };
         var newCorp = new Ajax( "authentifications.json", d, "post"); 

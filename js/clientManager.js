@@ -38,8 +38,8 @@ var ClientManager = Class({
         var self = this;
         var form = formId ? $(formId) : $("#formLogin");
 
-        prenom = form.find( "input[name='first_name']" ).val();
-        nom    = form.find( "input[name='last_name']" ).val();
+        prenom = main.getFormData( form, "first_name");
+        nom    = main.getFormData( form, "last_name");
 
         if ( !main.isFormValid([prenom, nom])) return;
 

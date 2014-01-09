@@ -52,10 +52,10 @@ var AdminManager = Class({
         var form   = formId ? $(formId) : $("#form_new_user");
         var idCorp = this.corp.id;
 
-        prenom = form.find( "input[name='first_name']" ).val();
-        nom    = form.find( "input[name='last_name']" ).val();
-        mail   = form.find( "input[name='email']" ).val();
-        pwd    = form.find( "input[name='pass']" ).val();
+        prenom = main.getFormData( form, "first_name");
+        nom    = main.getFormData( form, "last_name");
+        mail   = main.getFormData( form, "email");
+        pwd    = main.getFormData( form, "pass");
 
         if ( !main.isFormValid([prenom, nom, mail, pwd])) return;
         if ( !main.isEmail( mail)) return;
@@ -138,10 +138,10 @@ var AdminManager = Class({
 
     submitModifUser : function(event){
         var form = $(event);
-        id     = form.find( "input[name='id']" ).val();
-        prenom = form.find( "input[name='first_name']" ).val();
-        nom    = form.find( "input[name='last_name']" ).val();
-        mail   = form.find( "input[name='email']" ).val();
+        id     = main.getFormData( form, "id");
+        prenom = main.getFormData( form, "first-name");
+        nom    = main.getFormData( form, "last_name");
+        mail   = main.getFormData( form, "email");
 
         if ( !main.isFormValid([prenom, nom, mail, id])) return;
         if ( !main.isEmail( mail)) return;
