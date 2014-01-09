@@ -78,17 +78,11 @@ var ClientManager = Class({
             var constat ="";
             for (var i = 0; i < data.length; i++){
             constat +=' <div class="panel-body">'
-                     +'     <div onclick="main.editConstat('+data[i].id+')">'+ data[i].user.first_name + ' ' + data[i].user.last_name + ' (' + data[i].date+')</div> '
-                     +' </div>'  
+                     +'     <div onclick="main.editConstat('+data[i].id+')">'+ data[i].title +'</div> '
+                     +' </div>'
             }
             $('#buildCollapseOne_' + id).append( constat);
         };
         reportList.call();
-    },
-
-    getClientById : function (id) { 
-        for (var i = 0; i < this.clients.length; i++) 
-            if (this.clients[i].id == id)
-                return this.clients[i];
     }
 });

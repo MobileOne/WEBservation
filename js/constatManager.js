@@ -45,21 +45,16 @@ var ConstatManager = Class({
     openConstat : function ( constat) {
         console.log( constat);
         if (!constat) return "";
-
         $(this.container).empty();
         $(this.container).append( "<h2>" + constat.title + "</h2>");
-        //$(this.container).append( "<h3>" + constat.customer.first_name +  "</h3>");
-
-        $(this.container).append( '<form class="form-horizontal" role="form">');
-
-        var textArea    = '<label for="constat_text">Texte</label>'
-                        + '<iframe id="printPdf" srcdoc="" style="display:none"></iframe>'
-                        + '<textarea id="constat_text" class="form-control" rows="10" style="display:none;"> </textarea>'
+        $(this.container).append( "<h3>" + constat.customer.first_name +  "</h3>");
+        var content     = "";
+        /*var textArea    = '<iframe id="printPdf" srcdoc="" style="display:none"></iframe>'
+                        + '<textarea id="constat_text"  name="constat_text" class="form-control" rows="10" style="display:none;">'+ constat.description +'</textarea>'
         
         var epiceditor = '<div id="epiceditor" style="height:px; width:px; background-color: grey;"></div>'
 
-        $(this.container).append( textArea);
-        $(this.container).append( epiceditor);
+        content += textArea + epiceditor;
 
         var editorText = $("#constat_text").val();
 
@@ -97,48 +92,44 @@ var ConstatManager = Class({
             toggleFullscreen: 'FullScreen'
           },
           autogrow: true
-        }
-        this.markdownEditor = new EpicEditor(opts).load();
+        }*/
 
-        if (!constat.content){
-            $(this.container).append( "Ce constat ne contient aucune pièce jointe");
-            $(this.container).append( '<br/><button type="submit" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
-            $(this.container).append( '</form>');
-            return;
+        if (constat.songs.length == 0 && constat.pictures.length == 0 && constat.position_x == null && constat.position_y == null){
+            content += "Ce constat ne contient aucune pièce jointe";
+            content += '<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>';
         }
-
-        $(this.container).append(this.buildCollapse("Pictures", constat, "audio"));
-        $(this.container).append(this.buildCollapse("Photo", constat, "img"));
-        $(this.container).append(this.buildCollapse("Position", constat, "gps"));
-        $(this.container).append( '<br/><button type="submit" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
-        $(this.container).append( '</form>');
+        else{
+            if (constat.songs.   length > 0)                              content += this.buildCollapse("Audio", constat, "audio");
+            if (constat.pictures.length > 0)                              content += this.buildCollapse("Photos", constat, "img");
+            if (constat.position_x != null && constat.position_y != null) content += this.buildCollapse("Position", constat, "gps");
+            content += '<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>';
+            content += '<button type="submit" class="btn btn-success">Sauvegarder le constat</button>';
+        }
+        $(this.container).append( '<form class="form-horizontal" role="form" onsubmit="main.saveReport(this); return false;">'+content+'</form>');
+       // this.markdownEditor = new EpicEditor(opts).load();
     },
 
-    saveMarkdown : function(){
-        var html = this.markdownEditor.exportFile( null, "html");
-        $("#printPdf").attr("srcdoc", html);
-
-        setTimeout( function(){
-            
-            window.frames["printPdf"].print();
-        }, 1000);
-
-    },
-
-    buildPJ : function( constat, type, balise){
+    buildPJ : function( constat, type){
         var content = "";
-        for (var i = 0; i < constat.content.length; i++){ 
-            if ( constat.content[i].type == type){ 
-                content +='<div class="panel-body">'
-                        if (type == "img")   content +=' <div class="col-sm-12"> <input class="form-control" type="text" value="![Image](' + constat.content[i].value + ')"/> </div> <img style="width:100%;"  src="' + constat.content[i].value + '"/>'
-                        if (type == "audio") content +='<audio style="width:100%;" controls="controls" src="data/audio/' + constat.content[i].value + '"/>'
-                        if (type == "gps")   {
-                            content +='<div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.content[i].x+'" y="'+constat.content[i].y+'"></div>'
-                        }
-                content +='</div>' 
-            }
-        }      
+        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="![Image](' + constat.pictures[i].data + ')"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
+        if (type=="audio") for (var i = 0; i < constat.songs.length; i++)    content +='<div class="panel-body"> <audio style="width:100%;" controls="controls" src="file.mp3"/> </div>'; 
+        if (type=="gps")   content +='<div class="panel-body"> <div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
         return content;
+    },
+      
+    buildCollapse : function( title, constat, type){
+        var txt ='  <div class="panel-group" id="buildCollapse_' + title +'" onClick="main.buildMap(\''+type+'\', this)">'
+                +'      <div class="panel panel-default">'
+                +'          <div class="panel-heading">'
+                +'              <h4 class="panel-title">'
+                +'                  <a data-toggle="collapse" data-parent="buildCollapse_' + title +'" href="#buildCollapseOne_' + title +'"> ' + title + ' </a>'
+                +'              </h4>'
+                +'          </div>'
+                +'      <div id="buildCollapseOne_' + title +'" class="panel-collapse collapse out">'
+                +           this.buildPJ( constat, type)
+                +'      </div>'
+                +'  </div>'
+        return txt;
     },
 
     buildMap : function( type){
@@ -159,28 +150,28 @@ var ConstatManager = Class({
         var map    = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
         marker.setMap( map);
     },
-      
-    buildCollapse : function( title, constat, type){
-        var a   ='  <div class="panel-group" id="buildCollapse_' + title +'" onClick="main.buildMap(\''+type+'\', this)">'
-                +'      <div class="panel panel-default">'
-                +'          <div class="panel-heading">'
-                +'              <h4 class="panel-title">'
-                +'                  <a data-toggle="collapse" data-parent="buildCollapse_' + title +'" href="#buildCollapseOne_' + title +'"> ' + title + ' </a>'
-                +'              </h4>'
-                +'          </div>'
-                +'      <div id="buildCollapseOne_' + title +'" class="panel-collapse collapse out">';
 
-        if(type == "img")   a += this.buildPJ( constat, "img");
-        if(type == "audio") a += this.buildPJ( constat, "audio");
-        if(type == "gps")   a += this.buildPJ( constat, "gps");
+    saveReport : function( event){
+        var form = $(event);
+        text  = main.getFormData( form, "constat_text");
 
-            a  +='      </div>'
-                +'  </div>'
-        return a;
+alert( text);
+        return;
+
+        if ( !main.isFormValid([text])) return;
+
+        var data = { firstName : prenom, lastName : nom, email : mail, password : pwd};
+        var newUser = new Ajax( "users/"+id+".json", data, "put"); 
+        newUser.onSuccess = function( data){ main.addAlert("Utilisateur modifié avec succès", "success", "main.openAdmin()"); };
+        newUser.onError   = function( data){ main.addAlert("Utilisateur non modifié", "danger"); };
+        newUser.call();
     },
 
-    getConstatById : function (id) { alert("getConstatById"); return;
-        for (var i = 0; i < this.constats.length; i++) if (this.constats[i].id == id) return this.constats[i];
+    saveMarkdown : function(){
+        var html = this.markdownEditor.exportFile( null, "html");
+        $("#printPdf").attr("srcdoc", html);
+        setTimeout( function(){ window.frames["printPdf"].print(); }, 1000);
+
     }
 });
 

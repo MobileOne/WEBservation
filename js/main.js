@@ -59,6 +59,10 @@ var Main = Class({
         elt.setAttribute("onclick", "")
     },
 
+    saveReport : function( e){
+        this.constatManager.saveReport( e);
+    },
+
     deleteUser : function(id){
         this.adminManager.deleteUser(id);
     },
@@ -93,13 +97,13 @@ var Main = Class({
 
     addAlert : function( text, type, onClose){
         var text    = text    || "";
-        var type    = type    || "success"
-        var onClose = onClose || ""
+        var type    = type    || "success";
+        var onClose = onClose || "";
         var alert = '   <div class="col-xs-10 alert alert-'+type+' alert-dismissable overflowAlert">'
                     +'      <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="'+onClose+'">&times;</button>'
                     +'      <strong>' + text + '</strong>'
                     +'  </div>'
-        $(this.container).append( alert);            
+        $(this.container).append( alert);
     },
 
     isEmail : function( email){
@@ -116,7 +120,7 @@ var Main = Class({
     },
 
     addBackSlash : function( str){
-        return this.encode( str);
+       // return this.encode( str);
         /*
         console.log( str.test(/'/));
         str = str.replace(/'/, '_');
