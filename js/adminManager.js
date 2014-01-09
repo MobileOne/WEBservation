@@ -6,23 +6,20 @@ var AdminManager = Class({
     initialize : function () {},
 
     openAdmin : function () { 
-        var self = this;
         $(this.container).empty();
         this.buildNewUsherForm();
-
-        var req = new Ajax( "users/"+session.getItem('userId')+".json", null, "get"); 
-        req.onSuccess = function( data){ self.corp = data.company; self.buildCorpStat(); 
-
-            self.aa();
-
-        };
-        req.onError   = function( data){ main.addAlert("Problème au chargement de la société", "danger"); };
-        req.call();
-
-        
+        this.getCompagny();
     },
 
-    aa : function(){
+    getCompagny : function(){
+        var self = this;
+        var req = new Ajax( "users/"+session.getItem('userId')+".json", null, "get"); 
+        req.onSuccess = function( data){ self.corp = data.company; self.buildCorpStat(); self.getUsers(); };
+        req.onError   = function( data){ main.addAlert("Problème au chargement de la société", "danger"); };
+        req.call();
+    },
+
+    getUsers : function(){
         var self = this;
         var userList = new Ajax( "companies/"+this.corp.id+"/user.json", null, "get"); 
         userList.onSuccess = function( data){ self.users = data; console.log( self.users); self.buildUsersList(); };
@@ -139,7 +136,7 @@ var AdminManager = Class({
     submitModifUser : function(event){
         var form = $(event);
         id     = main.getFormData( form, "id");
-        prenom = main.getFormData( form, "first-name");
+        prenom = main.getFormData( form, "first_name");
         nom    = main.getFormData( form, "last_name");
         mail   = main.getFormData( form, "email");
 

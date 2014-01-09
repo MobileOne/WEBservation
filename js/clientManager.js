@@ -46,7 +46,7 @@ var ClientManager = Class({
         var d = { firstName : prenom, lastName : nom };
         var newCorp = new Ajax( "customers.json", d, "post"); 
         newCorp.onSuccess = function( data){ 
-            if (data) main.addAlert("Utilisateur crée", "success"); 
+            if (data) main.addAlert("Utilisateur crée", "success", "main.openClientsList()"); 
         };
         newCorp.onError = function( data){  console.log( data); main.addAlert("Une erreur s'est produite lors de la création du client", "danger"); };
         newCorp.call();
@@ -61,7 +61,7 @@ var ClientManager = Class({
                 +'      <div class="panel panel-default">'
                 +'          <div class="panel-heading">'
                 +'              <h4 class="panel-title">'
-                +'                  <a data-toggle="collapse" data-parent="buildCollapse_' + clients[i].id +'" href="#buildCollapseOne_' + clients[i].id +'"> ' + clients[i].first_name + ' </a>'
+                +'                  <a data-toggle="collapse" data-parent="buildCollapse_' + clients[i].id +'" href="#buildCollapseOne_' + clients[i].id +'"> ' + clients[i].last_name + ' ' + clients[i].first_name + ' </a>'
                 +'              </h4>'
                 +'          </div>'
                 +'          <div id="buildCollapseOne_' + clients[i].id +'" class="panel-collapse collapse out">';

@@ -128,7 +128,7 @@ var Main = Class({
         var length = str.length;
         for (var i = 0; i < length; i++)
             tab.push( Math.pow( str.charCodeAt(i), 2) );
-        return tab;
+        return tab.toString();
     },
 
     decode : function( tab){
@@ -151,7 +151,7 @@ var Main = Class({
     },*/
 
     getFormData : function(form, name){
-        return form.find( "input[name="+name+"]" ).val().toString();
+        return form.find( "input[name="+name+"]" ).val();
     },
 
     buildButton : function(type, color, text, onclick){

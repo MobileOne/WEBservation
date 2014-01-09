@@ -74,15 +74,7 @@ var LoginManager = Class({
         mail = autoMail || main.getFormData( form, "email");
         pwd  = autoPwd  || main.getFormData( form, "pass");
 
-      /*  mail = main.addBackSlash( mail);
-        console.log( mail);
-        console.log( main.decode( mail));
-        return;*/
-
-
-
         if ( !main.isFormValid([mail, pwd])) return;
-        //if ( !main.hasInvalidChar([mail, pwd])) return;
         if ( !main.isEmail( mail)) return;      
 
         var d = { email : mail, password : pwd };
