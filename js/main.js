@@ -161,7 +161,7 @@ var Main = Class({
     },*/
 
     getFormData : function(form, name){
-        return form.find( "input[name="+name+"]" ).val();
+        return form.find( "input[name="+name+"]" ).val().toString();
     },
 
     buildButton : function(type, color, text, onclick){

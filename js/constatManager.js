@@ -44,7 +44,6 @@ var ConstatManager = Class({
 
     openConstat : function ( constat) {
         if (!constat) return "";
-        var time = new Date().getTime();
         main.vider();
         $(this.container).append( "<h2>" + constat.title + "</h2>");
         $(this.container).append( "<h3>" + constat.customer.first_name + " " + constat.customer.last_name +  "</h3>");
@@ -55,6 +54,7 @@ var ConstatManager = Class({
             $(this.container).append("Ce constat ne contient aucune pièce jointe");
             $(this.container).append('<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
             $(this.container).append('<button type="button" onclick="main.saveReport('+constat.id+')" class="btn btn-success">Sauvegarder le constat</button>');
+            main.createEditor(constat.description);
             return;
         }
         
@@ -63,16 +63,15 @@ var ConstatManager = Class({
         if (constat.position_x != null && constat.position_y != null) $(this.container).append(this.buildCollapse("Position", constat, "gps"));
         $(this.container).append('<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
         $(this.container).append('<button type="button" onclick="main.saveReport('+constat.id+')" class="btn btn-success">Sauvegarder le constat</button>');
-        
         main.createEditor(constat.description);
     },
 
 
     buildPJ : function( constat, type){
         var content = "";
-        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="data:image/gif;base64,' + constat.pictures[i].data + '"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
+        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="' + constat.pictures[i].data + '"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
         if (type=="audio") for (var i = 0; i < constat.songs.length; i++)    content +='<div class="panel-body"> <audio style="width:100%;" controls="controls" src="file.mp3"/> </div>'; 
-        if (type=="gps")   content +='<div class="panel-body"> <div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
+        if (type=="gps")   content +='<div class="panel-body"> <div id="address"></div> <div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
         return content;
     },
       
@@ -101,7 +100,12 @@ var ConstatManager = Class({
             zoom: 15,
             streetViewControl : true
         };
+        // x = 44.8
+        // y = -0.6
 
+        var request = $.get( "http://maps.googleapis.com/maps/api/geocode/json?latlng="+x+","+y+"&sensor=false"); 
+        request.done(function( data ) { $("#address").append( data.results[0].formatted_address); });
+       
         var markerOptions = {
             position: new google.maps.LatLng(x, y)
         };
@@ -113,7 +117,6 @@ var ConstatManager = Class({
     saveReport : function( constatId){
         console.log( constatId);
         var desc = main.editor.getData();
-        /* ----------------- TODO requete de sauvegarde du constat ------------------*/
         var data = { userId: 1, customerId: 1, description : desc, positionX : 45, positionY : 45 };
         var req = new Ajax( "reports/"+constatId+".json", data, "put"); 
         req.onSuccess = function( data){ main.addAlert("Constat sauvegardé avec succès", "success", "main.openConstats()"); };

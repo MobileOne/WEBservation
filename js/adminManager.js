@@ -54,6 +54,8 @@ var AdminManager = Class({
         mail   = main.getFormData( form, "email");
         pwd    = main.getFormData( form, "pass");
 
+        console.log( prenom);
+        
         if ( !main.isFormValid([prenom, nom, mail, pwd])) return;
         if ( !main.isEmail( mail)) return;
 
