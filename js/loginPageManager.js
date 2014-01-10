@@ -6,7 +6,7 @@ var LoginManager = Class({
 
     openLoginPage : function () { 
         var self = this;
-        $(this.container).empty();
+        main.vider();
         $(this.container).append( "<h1>Bienvenue sur WEBservation</h1>");
         main.buildNavBar( true);
         this.buildLoginForm();
@@ -88,7 +88,7 @@ var LoginManager = Class({
                 main.openConstats( userName);
             }
         };
-        newCorp.onError = function( data){  main.addAlert("Une erreur s'est produite", "danger"); };
+        newCorp.onError = function( data){  console.log( data); main.addAlert("Une erreur s'est produite", "danger"); };
         newCorp.call();
     }
 

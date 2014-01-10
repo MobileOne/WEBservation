@@ -8,7 +8,7 @@ var ConstatManager = Class({
 
     openConstats : function ( userName) { 
         main.buildNavBar( false, userName);
-        $(this.container).empty();
+        main.vider();
         var self = this;
         //var getReport = new Ajax( "reports.json", null, "get"); 
         //getReport.onSuccess = function( data){ 
@@ -43,75 +43,34 @@ var ConstatManager = Class({
     },
 
     openConstat : function ( constat) {
-        console.log( constat);
         if (!constat) return "";
-        $(this.container).empty();
+        var time = new Date().getTime();
+        main.vider();
         $(this.container).append( "<h2>" + constat.title + "</h2>");
-        $(this.container).append( "<h3>" + constat.customer.first_name +  "</h3>");
-        var content     = "";
-        /*var textArea    = '<iframe id="printPdf" srcdoc="" style="display:none"></iframe>'
-                        + '<textarea id="constat_text"  name="constat_text" class="form-control" rows="10" style="display:none;">'+ constat.description +'</textarea>'
-        
-        var epiceditor = '<div id="epiceditor" style="height:px; width:px; background-color: grey;"></div>'
-
-        content += textArea + epiceditor;
-
-        var editorText = $("#constat_text").val();
-
-        var opts = {
-          container: 'epiceditor',
-          textarea: 'constat_text',
-          clientSideStorage: false,
-          localStorageName: 'epiceditor',
-          useNativeFullscreen: false,
-          parser: marked,
-          file: {
-            name: 'epiceditor',
-            defaultContent: editorText || '',
-            autoSave: 100
-          },
-          theme: {
-            base: '/themes/base/epiceditor.css',
-            preview: '/themes/preview/preview-dark.css',
-            editor: '/themes/editor/epic-dark.css'
-          },
-          button: {
-            preview: true,
-            fullscreen: false,
-            bar: "auto"
-          },
-          focusOnLoad: true,
-          shortcut: {
-            modifier: 18,
-            fullscreen: 70,
-            preview: 80
-          },
-          string: {
-            togglePreview: 'Activer prévisualisation',
-            toggleEdit: 'Activer édition',
-            toggleFullscreen: 'FullScreen'
-          },
-          autogrow: true
-        }*/
+        $(this.container).append( "<h3>" + constat.customer.first_name + " " + constat.customer.last_name +  "</h3>");
+        $(this.container).append( '<iframe id="printPdf" srcdoc="" style="display:none"></iframe>');
+        $(this.container).append( '<div id="input_editor"></div>');
 
         if (constat.songs.length == 0 && constat.pictures.length == 0 && constat.position_x == null && constat.position_y == null){
-            content += "Ce constat ne contient aucune pièce jointe";
-            content += '<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>';
+            $(this.container).append("Ce constat ne contient aucune pièce jointe");
+            $(this.container).append('<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
+            $(this.container).append('<button type="button" onclick="main.saveReport('+constat.id+')" class="btn btn-success">Sauvegarder le constat</button>');
+            return;
         }
-        else{
-            if (constat.songs.   length > 0)                              content += this.buildCollapse("Audio", constat, "audio");
-            if (constat.pictures.length > 0)                              content += this.buildCollapse("Photos", constat, "img");
-            if (constat.position_x != null && constat.position_y != null) content += this.buildCollapse("Position", constat, "gps");
-            content += '<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>';
-            content += '<button type="submit" class="btn btn-success">Sauvegarder le constat</button>';
-        }
-        $(this.container).append( '<form class="form-horizontal" role="form" onsubmit="main.saveReport(this); return false;">'+content+'</form>');
-       // this.markdownEditor = new EpicEditor(opts).load();
+        
+        if (constat.songs.   length > 0)                              $(this.container).append(this.buildCollapse("Audio", constat, "audio"));
+        if (constat.pictures.length > 0)                              $(this.container).append(this.buildCollapse("Photos", constat, "img"));
+        if (constat.position_x != null && constat.position_y != null) $(this.container).append(this.buildCollapse("Position", constat, "gps"));
+        $(this.container).append('<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
+        $(this.container).append('<button type="button" onclick="main.saveReport('+constat.id+')" class="btn btn-success">Sauvegarder le constat</button>');
+        
+        main.createEditor(constat.description);
     },
+
 
     buildPJ : function( constat, type){
         var content = "";
-        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="![Image](' + constat.pictures[i].data + ')"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
+        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="data:image/gif;base64,' + constat.pictures[i].data + '"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
         if (type=="audio") for (var i = 0; i < constat.songs.length; i++)    content +='<div class="panel-body"> <audio style="width:100%;" controls="controls" src="file.mp3"/> </div>'; 
         if (type=="gps")   content +='<div class="panel-body"> <div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
         return content;
@@ -151,28 +110,20 @@ var ConstatManager = Class({
         marker.setMap( map);
     },
 
-    saveReport : function( event){
-        var form = $(event);
-        text  = main.getFormData( form, "constat_text");
-
-alert( text);
-        return;
-
-        if ( !main.isFormValid([text])) return;
-
-        var data = { firstName : prenom, lastName : nom, email : mail, password : pwd};
-        var newUser = new Ajax( "users/"+id+".json", data, "put"); 
-        newUser.onSuccess = function( data){ main.addAlert("Utilisateur modifié avec succès", "success", "main.openAdmin()"); };
-        newUser.onError   = function( data){ main.addAlert("Utilisateur non modifié", "danger"); };
-        newUser.call();
+    saveReport : function( constatId){
+        console.log( constatId);
+        var desc = main.editor.getData();
+        /* ----------------- TODO requete de sauvegarde du constat ------------------*/
+        var data = { userId: 1, customerId: 1, description : desc, positionX : 45, positionY : 45 };
+        var req = new Ajax( "reports/"+constatId+".json", data, "put"); 
+        req.onSuccess = function( data){ main.addAlert("Constat sauvegardé avec succès", "success", "main.openConstats()"); };
+        req.onError   = function( data){ console.log( data); main.addAlert("Constat non sauvegardé", "danger"); };
+        req.call();
     },
 
     saveMarkdown : function(){
-        var html = this.markdownEditor.exportFile( null, "html");
-        $("#printPdf").attr("srcdoc", html);
+        $("#printPdf").attr("srcdoc", main.editor.getData());
         setTimeout( function(){ window.frames["printPdf"].print(); }, 1000);
 
     }
 });
-
-

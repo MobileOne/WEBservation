@@ -6,7 +6,7 @@ var ClientManager = Class({
     },
 
     openClientsList : function(){
-        $(this.container).empty();
+        main.vider();
         this.buildAddClientForm();
         this.getClientsList();
     },

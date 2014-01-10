@@ -49,6 +49,12 @@ var Main = Class({
         this.adminManager.openAdmin();
     },
 
+    vider : function( identifiant){
+        this.removeEditor();
+        var id = identifiant || this.container;
+        $(id).empty();
+    },
+
     submitNewClient : function( that){
         this.clientManager.submitNewClient( that);
     },
@@ -59,8 +65,8 @@ var Main = Class({
         elt.setAttribute("onclick", "")
     },
 
-    saveReport : function( e){
-        this.constatManager.saveReport( e);
+    saveReport : function( constat){
+        this.constatManager.saveReport( constat);
     },
 
     deleteUser : function(id){
@@ -186,5 +192,21 @@ var Main = Class({
         +'  </form>'
         $(this.navBar).append( nav)
     },
+
+    editor : null,
+
+    createEditor : function( txt){
+        if ( this.editor ) return;
+        var config = {};
+        this.editor = CKEDITOR.appendTo( 'input_editor', config, txt );
+
+    },
+
+    removeEditor : function(){
+        if ( !this.editor ) return;
+        this.editor.destroy();
+        this.editor = null;
+    }
+
 });
 var main = new Main();

@@ -6,7 +6,7 @@ var AdminManager = Class({
     initialize : function () {},
 
     openAdmin : function () { 
-        $(this.container).empty();
+        main.vider();
         this.buildNewUsherForm();
         this.getCompagny();
     },
