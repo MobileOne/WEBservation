@@ -48,7 +48,7 @@ var ClientManager = Class({
         newCorp.onSuccess = function( data){ 
             if (data) main.addAlert("Utilisateur crée", "success", "main.openClientsList()"); 
         };
-        newCorp.onError = function( data){  console.log( data); main.addAlert("Une erreur s'est produite lors de la création du client", "danger"); };
+        newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite lors de la création du client", "danger"); };
         newCorp.call();
     },
 

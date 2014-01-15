@@ -13,7 +13,7 @@ var AdminManager = Class({
 
     getCompagny : function(){
         var self = this;
-        var req = new Ajax( "users/"+session.getItem('userId')+".json", null, "get"); 
+        var req = new Ajax( "users/"+main.getClientId()+".json", null, "get"); 
         req.onSuccess = function( data){ self.corp = data.company; self.buildCorpStat(); self.getUsers(); };
         req.onError   = function( data){ main.addAlert("Problème au chargement de la société", "danger"); };
         req.call();
@@ -22,7 +22,7 @@ var AdminManager = Class({
     getUsers : function(){
         var self = this;
         var userList = new Ajax( "companies/"+this.corp.id+"/user.json", null, "get"); 
-        userList.onSuccess = function( data){ self.users = data; console.log( self.users); self.buildUsersList(); };
+        userList.onSuccess = function( data){ self.users = data; self.buildUsersList(); };
         userList.onError   = function( data){ main.addAlert("Problème au chargement de la liste des utilisateurs", "danger"); };
         userList.call();
     },
@@ -53,8 +53,6 @@ var AdminManager = Class({
         nom    = main.getFormData( form, "last_name");
         mail   = main.getFormData( form, "email");
         pwd    = main.getFormData( form, "pass");
-
-        console.log( prenom);
         
         if ( !main.isFormValid([prenom, nom, mail, pwd])) return;
         if ( !main.isEmail( mail)) return;
@@ -127,9 +125,9 @@ var AdminManager = Class({
                  +'         <div class="btn-group">'
                  +              main.buildButton("submit", "success", "Valider modification")
                  +              main.buildButton("reset",  "primary", "Annuler")
-                 +              main.buildButton("button", "warning", "Réinitialiser mot de passe")
-                 +              main.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
-                 +'         </div>'
+                 +              main.buildButton("button", "warning", "Réinitialiser mot de passe");
+                if ( user.id != main.getClientId()) info += main.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
+        info     += '         </div>'
                  +'     </form>'
                  +'</div>' 
         return info;
@@ -173,6 +171,7 @@ var AdminManager = Class({
 
     deleteUser : function (id) { 
         if (!id || !confirm("Vraiment supprimer ?")) return;
+        if (this.users.length <= 1){ main.addAlert("Supression du seul utilisateur de la société interdit", "danger"); return;}
         var newUser = new Ajax( "users/"+id+".json", null, "delete"); 
         newUser.onSuccess = function( data){ main.addAlert("Utilisateur supprimé avec succès", "success", "main.openAdmin()"); };
         newUser.onError   = function( data){ main.addAlert("Utilisateur non supprimé", "danger"); };
@@ -183,7 +182,7 @@ var AdminManager = Class({
         if (!id || !confirm("Supprimer la société?")) return;
         if (!id || !confirm("Cela va également supprimer tous utilisateurs ainsi que les constats associés à cette société.\nVoulez-vous vraiment supprimer la société?")) return;
         var newUser = new Ajax( "companies/"+id+".json", null, "delete"); 
-        newUser.onSuccess = function( data){ main.addAlert("Société supprimée avec succès", "success", "main.openAdmin()"); };
+        newUser.onSuccess = function( data){ main.addAlert("Société supprimée avec succès", "success", "main.deconnexion()"); };
         newUser.onError   = function( data){ main.addAlert("Société non supprimé", "danger"); };
         newUser.call();
     }

@@ -80,15 +80,17 @@ var LoginManager = Class({
         var d = { email : mail, password : pwd };
         var newCorp = new Ajax( "authentifications.json", d, "post"); 
         newCorp.onSuccess = function( data){ 
-            if (!data) main.addAlert("Informations d'identification non valides", "danger"); 
+            if (data == "Wrong password") main.addAlert("Mot de passe non valide", "danger"); 
+            else if (data == "Wrong user") main.addAlert("Identifiant non valide", "danger"); 
             else {
                 var userName = data.first_name + " " + data.last_name;
-                session.setItem("userId",   data.id);
+                //session.setItem("userId",   data.id);
+                config.clientId = data.id;
                 session.setItem("userNameToDisplay", userName);
                 main.openConstats( userName);
             }
         };
-        newCorp.onError = function( data){  console.log( data); main.addAlert("Une erreur s'est produite", "danger"); };
+        newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite", "danger"); };
         newCorp.call();
     }
 

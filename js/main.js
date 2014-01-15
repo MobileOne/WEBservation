@@ -19,10 +19,11 @@ var Main = Class({
 
     deconnexion : function () { 
         sessionStorage.clear();
+        this.openLoginPage();
     },
 
-    openConstats : function ( userName) {
-        this.constatManager.openConstats( userName);
+    openConstats : function () {
+        this.constatManager.openConstats();
     },
 
     openConstat : function ( constat) {
@@ -206,6 +207,10 @@ var Main = Class({
         if ( !this.editor ) return;
         this.editor.destroy();
         this.editor = null;
+    },
+
+    getClientId : function(){
+        return config.clientId;
     }
 
 });

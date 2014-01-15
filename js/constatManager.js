@@ -6,22 +6,23 @@ var ConstatManager = Class({
     initialize : function () { 
     },
 
-    openConstats : function ( userName) { 
-        main.buildNavBar( false, userName);
+    openConstats : function ( ) { 
+        main.buildNavBar( false, session.getItem("userNameToDisplay"));
         main.vider();
         var self = this;
-        //var getReport = new Ajax( "reports.json", null, "get"); 
-        //getReport.onSuccess = function( data){ 
-        //    console.log( data);
-       //     self.constats = data;
-            self.buildConstatList();
-       // };
-       // getReport.call();
+        var req = new Ajax( "users/"+main.getClientId()+".json", null, "get"); 
+        req.onSuccess = function( data){ 
+            var getReport = new Ajax( "companies/"+data.company.id+"/report.json", null, "get"); 
+            getReport.onSuccess = function( data){ self.constats = data; self.buildConstatList(); };
+            getReport.call();
+        };
+        req.call();
+
     },
 
     buildConstatList : function () {
         $(this.container).append( '<h2>Constats</h2>');
-        if (!this.constats) { $(this.container).append( 'Pas de constats disponible'); return;}
+        if (!this.constats || this.constats == "No reports") { $(this.container).append( 'Pas de constats disponible'); return;}
         $(this.container).append( '<ul class="list-group">');
         for (var i = 0; i < this.constats.length; i++){
             var text = '<li class="list-group-item" onclick="main.editConstat(' + this.constats[i].id + ')">'
@@ -50,7 +51,7 @@ var ConstatManager = Class({
         $(this.container).append( '<iframe id="printPdf" srcdoc="" style="display:none"></iframe>');
         $(this.container).append( '<div id="input_editor"></div>');
 
-        if (constat.songs.length == 0 && constat.pictures.length == 0 && constat.position_x == null && constat.position_y == null){
+        if (constat.sounds.length == 0 && constat.pictures.length == 0 && constat.position_x == null && constat.position_y == null){
             $(this.container).append("Ce constat ne contient aucune pièce jointe");
             $(this.container).append('<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
             $(this.container).append('<button type="button" onclick="main.saveReport('+constat.id+')" class="btn btn-success">Sauvegarder le constat</button>');
@@ -58,19 +59,29 @@ var ConstatManager = Class({
             return;
         }
         
-        if (constat.songs.   length > 0)                              $(this.container).append(this.buildCollapse("Audio", constat, "audio"));
+        if (constat.sounds.  length > 0)                              $(this.container).append(this.buildCollapse("Média", constat, "media"));
         if (constat.pictures.length > 0)                              $(this.container).append(this.buildCollapse("Photos", constat, "img"));
         if (constat.position_x != null && constat.position_y != null) $(this.container).append(this.buildCollapse("Position", constat, "gps"));
         $(this.container).append('<br/><button type="button" class="btn btn-success" onclick="main.saveMarkdown()">Imprimer</button>');
         $(this.container).append('<button type="button" onclick="main.saveReport('+constat.id+')" class="btn btn-success">Sauvegarder le constat</button>');
-        main.createEditor(constat.description);
+        main.createEditor(constat.description || config.initText);
     },
 
 
     buildPJ : function( constat, type){
         var content = "";
         if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="' + constat.pictures[i].data + '"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
-        if (type=="audio") for (var i = 0; i < constat.songs.length; i++)    content +='<div class="panel-body"> <audio style="width:100%;" controls="controls" src="file.mp3"/> </div>'; 
+        if (type=="media") 
+            for (var i = 0; i < constat.sounds.length; i++){
+                var son = constat.sounds[i].url;
+                if ( son.indexOf(".mp3") != -1 || son.indexOf(".ogg") != -1 || son.indexOf(".wav") != -1)
+                    content +='<div class="panel-body"> <audio style="width:100%;" controls="controls" src="'+ constat.sounds[i].url +'"/> </div>';
+
+                else if ( son.indexOf(".mp4") != -1 || son.indexOf(".webm") != -1 || son.indexOf(".ogv") != -1)
+                    content +='<div class="panel-body"> <video style="width:100%;" controls="controls" src="'+ constat.sounds[i].url +'"/> </div>'; 
+
+                else content +='<div class="panel-body"> Média non compatible </div>'; 
+            }
         if (type=="gps")   content +='<div class="panel-body"> <div id="address"></div> <div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
         return content;
     },
@@ -100,8 +111,6 @@ var ConstatManager = Class({
             zoom: 15,
             streetViewControl : true
         };
-        // x = 44.8
-        // y = -0.6
 
         var request = $.get( "http://maps.googleapis.com/maps/api/geocode/json?latlng="+x+","+y+"&sensor=false"); 
         request.done(function( data ) { $("#address").append( data.results[0].formatted_address); });
@@ -115,12 +124,11 @@ var ConstatManager = Class({
     },
 
     saveReport : function( constatId){
-        console.log( constatId);
         var desc = main.editor.getData();
-        var data = { userId: 1, customerId: 1, description : desc, positionX : 45, positionY : 45 };
+        var data = { description : desc };
         var req = new Ajax( "reports/"+constatId+".json", data, "put"); 
         req.onSuccess = function( data){ main.addAlert("Constat sauvegardé avec succès", "success", "main.openConstats()"); };
-        req.onError   = function( data){ console.log( data); main.addAlert("Constat non sauvegardé", "danger"); };
+        req.onError   = function( data){ main.addAlert("Constat non sauvegardé", "danger"); };
         req.call();
     },
 
