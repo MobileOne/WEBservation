@@ -87,7 +87,7 @@ var LoginManager = Class({
                 //session.setItem("userId",   data.id);
                 config.clientId = data.id;
                 session.setItem("userNameToDisplay", userName);
-                main.openConstats( userName);
+                main.openClientsList( userName);
             }
         };
         newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite", "danger"); };

@@ -22,10 +22,6 @@ var Main = Class({
         this.openLoginPage();
     },
 
-    openConstats : function () {
-        this.constatManager.openConstats();
-    },
-
     openConstat : function ( constat) {
         this.constatManager.openConstat( constat);
     },
@@ -183,7 +179,6 @@ var Main = Class({
         if ( !$(this.navBar).is(':empty')  ) return;
         var nav = ''
         +'  <ul class="nav navbar-nav">'
-        +'      <li><a href="#constats" onclick="main.openConstats()"   >Constats</a></li>'
         +'      <li><a href="#clients"  onclick="main.openClientsList()">Clients</a></li>'
         +'      <li><a href="#admin"    onclick="main.openAdmin()"      >Administration</a></li>'
         +'  </ul>'

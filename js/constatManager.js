@@ -6,33 +6,6 @@ var ConstatManager = Class({
     initialize : function () { 
     },
 
-    openConstats : function ( ) { 
-        main.buildNavBar( false, session.getItem("userNameToDisplay"));
-        main.vider();
-        var self = this;
-        var req = new Ajax( "users/"+main.getClientId()+".json", null, "get"); 
-        req.onSuccess = function( data){ 
-            var getReport = new Ajax( "companies/"+data.company.id+"/report.json", null, "get"); 
-            getReport.onSuccess = function( data){ self.constats = data; self.buildConstatList(); };
-            getReport.call();
-        };
-        req.call();
-
-    },
-
-    buildConstatList : function () {
-        $(this.container).append( '<h2>Constats</h2>');
-        if (!this.constats || this.constats == "No reports") { $(this.container).append( 'Pas de constats disponible'); return;}
-        $(this.container).append( '<ul class="list-group">');
-        for (var i = 0; i < this.constats.length; i++){
-            var text = '<li class="list-group-item" onclick="main.editConstat(' + this.constats[i].id + ')">'
-                     + this.constats[i].clientName
-                     + '</li>'
-            $(this.container).append( text);
-        }
-        $(this.container).append( "</ul>");
-    },
-
     editConstat : function (id) {
         var getReport = new Ajax( "reports/"+id+".json", null, "get"); 
         getReport.onSuccess = function( data){ 
@@ -127,7 +100,7 @@ var ConstatManager = Class({
         var desc = main.editor.getData();
         var data = { description : desc };
         var req = new Ajax( "reports/"+constatId+".json", data, "put"); 
-        req.onSuccess = function( data){ main.addAlert("Constat sauvegardé avec succès", "success", "main.openConstats()"); };
+        req.onSuccess = function( data){ main.addAlert("Constat sauvegardé avec succès", "success", "main.openClientsList()"); };
         req.onError   = function( data){ main.addAlert("Constat non sauvegardé", "danger"); };
         req.call();
     },
@@ -135,6 +108,5 @@ var ConstatManager = Class({
     saveMarkdown : function(){
         $("#printPdf").attr("srcdoc", main.editor.getData());
         setTimeout( function(){ window.frames["printPdf"].print(); }, 1000);
-
     }
 });

@@ -6,6 +6,7 @@ var AdminManager = Class({
     initialize : function () {},
 
     openAdmin : function () { 
+        main.buildNavBar( false, session.getItem("userNameToDisplay"));
         main.vider();
         this.buildNewUsherForm();
         this.getCompagny();
@@ -125,7 +126,7 @@ var AdminManager = Class({
                  +'         <div class="btn-group">'
                  +              main.buildButton("submit", "success", "Valider modification")
                  +              main.buildButton("reset",  "primary", "Annuler")
-                 +              main.buildButton("button", "warning", "Réinitialiser mot de passe");
+                 //+              main.buildButton("button", "warning", "Réinitialiser mot de passe");
                 if ( user.id != main.getClientId()) info += main.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
         info     += '         </div>'
                  +'     </form>'

@@ -6,6 +6,7 @@ var ClientManager = Class({
     },
 
     openClientsList : function(){
+        main.buildNavBar( false, session.getItem("userNameToDisplay"));
         main.vider();
         this.buildAddClientForm();
         this.getClientsList();
@@ -83,6 +84,7 @@ var ClientManager = Class({
             }
             $('#buildCollapseOne_' + id).append( constat);
         };
+        reportList.onError = function(data){ console.log(data);}
         reportList.call();
     }
 });
