@@ -59,7 +59,7 @@ var Main = Class({
     buildMap : function (type, elt) {
         var that = this;
         setTimeout( function(){ that.constatManager.buildMap(type);}, 500);
-        elt.setAttribute("onclick", "")
+        elt.setAttribute("onclick", "");
     },
 
     saveReport : function( constat){
@@ -139,15 +139,13 @@ var Main = Class({
 
 
 
-    /*hasInvalidChar : function( tab){
-        var bool = false;
-        for(var i = 0; i < tab.length; i++){
-            //bool = bool || !tab[i];
-        } 
-        
-        if ( bool) { main.addAlert("Ce formulaire contient un ou des caractères interdits", "danger"); return false; }
-        else return true;
-    },*/
+    hasInvalidChar : function( str){
+        var reg = new RegExp("^[a-zA-Z0-9 _-][@][:]+$"   );
+
+        return reg.test(str)
+    },
+
+
 
     getFormData : function(form, name){
         return form.find( "input[name="+name+"]" ).val().toString();
@@ -196,8 +194,8 @@ var Main = Class({
         this.editor = null;
     },
 
-    getClientId : function(){
-        return config.clientId;
+    getUserId : function(){
+        return config.userId;
     }
 
 });

@@ -12,9 +12,13 @@ var Ajax = Class({
 
     call : function () { 
         this.startLoading();
+
+        console.log( main.hasInvalidChar(this.data));
+
         if (this.type != "post" && this.type != "get" && this.type != "put" && this.type != "delete") throw 'Type de requête "' + this.type + '" non valide';
         var self = this;
-        var request = $.ajax({ type: this.type, url: this.url, data: this.data, timeout:config.timeout});
+       // var request = $.ajax({ type: this.type, url: this.url, data: this.data, timeout:config.timeout, dataType: "jsonp", crossDomain : true });
+        var request = $.ajax({ type: this.type, url: this.url, data: this.data, timeout:config.timeout });
         request.done(function( data )   { self.stopLoading(); self.onSuccess( data) });
         request.fail(function( data )   { self.stopLoading(); self.onError( data)   });
         request.always(function( data ) { self.stopLoading(); self.onAlways( data)  });

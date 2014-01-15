@@ -79,15 +79,13 @@ var LoginManager = Class({
 
         var d = { email : mail, password : pwd };
         var newCorp = new Ajax( "authentifications.json", d, "post"); 
-        newCorp.onSuccess = function( data){ 
-            if (data == "Wrong password") main.addAlert("Mot de passe non valide", "danger"); 
-            else if (data == "Wrong user") main.addAlert("Identifiant non valide", "danger"); 
+        newCorp.onSuccess = function( data){
+            if (data == "Wrong") main.addAlert("Erreur d'identification", "danger"); 
             else {
                 var userName = data.first_name + " " + data.last_name;
-                //session.setItem("userId",   data.id);
-                config.clientId = data.id;
+                config.userId = data.id;
                 session.setItem("userNameToDisplay", userName);
-                main.openClientsList( userName);
+                main.openClientsList();
             }
         };
         newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite", "danger"); };

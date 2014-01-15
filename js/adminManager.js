@@ -14,7 +14,7 @@ var AdminManager = Class({
 
     getCompagny : function(){
         var self = this;
-        var req = new Ajax( "users/"+main.getClientId()+".json", null, "get"); 
+        var req = new Ajax( "users/"+main.getUserId()+".json", null, "get"); 
         req.onSuccess = function( data){ self.corp = data.company; self.buildCorpStat(); self.getUsers(); };
         req.onError   = function( data){ main.addAlert("Problème au chargement de la société", "danger"); };
         req.call();
@@ -127,7 +127,7 @@ var AdminManager = Class({
                  +              main.buildButton("submit", "success", "Valider modification")
                  +              main.buildButton("reset",  "primary", "Annuler")
                  //+              main.buildButton("button", "warning", "Réinitialiser mot de passe");
-                if ( user.id != main.getClientId()) info += main.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
+                if ( user.id != main.getUserId()) info += main.buildButton("button", "danger",  "Supprimer utilisateur", 'main.deleteUser('+user.id+')')
         info     += '         </div>'
                  +'     </form>'
                  +'</div>' 
