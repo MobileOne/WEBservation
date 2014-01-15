@@ -21,11 +21,12 @@ var Ajax = Class({
     },
 
     startLoading : function(){
-        var load = '<div id="loading" class="loading"><img src="img/loading.png"/><br/>Chargement</div>';
+        var load = '<div class="loadingBack" id="loadingBack"></div><div id="loading" class="loading"><img src="img/loading.png"/><br/>Chargement</div>';
         $(config.container).append(load);
     },
 
     stopLoading : function(){
+        $("#loadingBack").remove();
         $("#loading").remove();
     },
 

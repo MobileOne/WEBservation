@@ -122,14 +122,6 @@ var Main = Class({
         else return true;
     },
 
-    addBackSlash : function( str){
-       // return this.encode( str);
-        /*
-        console.log( str.test(/'/));
-        str = str.replace(/'/, '_');
-        return str;*/
-    },
-
     encode : function( str){
         var tab = [];
         var length = str.length;

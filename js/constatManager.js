@@ -55,7 +55,7 @@ var ConstatManager = Class({
 
                 else content +='<div class="panel-body"> Média non compatible </div>'; 
             }
-        if (type=="gps")   content +='<div class="panel-body"> <div id="address"></div> <div id="map-canvas" style="height:500px; width:100%; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
+        if (type=="gps")   content +='<div class="panel-body"> <div id="address"></div> <div id="map-canvas" style="height:500px; width:600px; display:block" x="'+constat.position_x+'" y="'+constat.position_y+'"></div> </div>';
         return content;
     },
       
@@ -81,7 +81,7 @@ var ConstatManager = Class({
         
         var mapOptions = {
             center: new google.maps.LatLng(x, y),
-            zoom: 15,
+            zoom: 18,
             streetViewControl : true
         };
 
@@ -106,7 +106,8 @@ var ConstatManager = Class({
     },
 
     saveMarkdown : function(){
-        $("#printPdf").attr("srcdoc", main.editor.getData());
+        var txt = main.editor.getData() + "<div style='width:100%; height : 500px; position : relative; text-align:center;'>" + $("#map-canvas").html() + "</div>";
+        $("#printPdf").attr("srcdoc", txt)
         setTimeout( function(){ window.frames["printPdf"].print(); }, 1000);
     }
 });
