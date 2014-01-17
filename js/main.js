@@ -6,10 +6,6 @@ var Main = Class({
     adminManager   : null,
     loginManager   : null,
 
-    autologin : function(){
-        this.loginManager.submitLogin( null, "nono@nono.fr", "nono");
-    },
-
     initialize : function () { 
         this.constatManager = new ConstatManager();
         this.clientManager  = new ClientManager();
@@ -19,6 +15,8 @@ var Main = Class({
 
     deconnexion : function () { 
         sessionStorage.clear();
+        config.userId  = null;
+        config.userTok = null;
         this.openLoginPage();
     },
 
@@ -122,30 +120,10 @@ var Main = Class({
         else return true;
     },
 
-    encode : function( str){
-        var tab = [];
-        var length = str.length;
-        for (var i = 0; i < length; i++)
-            tab.push( Math.pow( str.charCodeAt(i), 2) );
-        return tab.toString();
-    },
-
-    decode : function( tab){
-        var str = "";
-        for (var i = 0; i < tab.length; i++)
-            str += String.fromCharCode( Math.sqrt(tab[i]) );
-        return str;
-    },
-
-
-
     hasInvalidChar : function( str){
-        var reg = new RegExp("^[a-zA-Z0-9 _-][@][:]+$"   );
-
+        var reg = new RegExp(/<|script|>|--/);
         return reg.test(str)
     },
-
-
 
     getFormData : function(form, name){
         return form.find( "input[name="+name+"]" ).val().toString();
@@ -185,7 +163,6 @@ var Main = Class({
         if ( this.editor ) return;
         var config = {};
         this.editor = CKEDITOR.appendTo( 'input_editor', config, txt );
-
     },
 
     removeEditor : function(){

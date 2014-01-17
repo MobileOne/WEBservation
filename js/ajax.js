@@ -3,22 +3,35 @@ var Ajax = Class({
     url    : null,
     data   : null,
     type   : null,
+    basic  : null,
 
-    initialize : function ( serviceName, data, type) { 
+    initialize : function ( serviceName, data, type, mail, password) { 
         this.url  = this.apiUrl + serviceName;
         if (data) this.data = JSON.stringify(data);
         this.type = type || "post";
+        if (mail && password) config.userTok = this.buildAuth( mail, password);
+        this.basic = config.userTok;
     },
 
-    call : function () { 
+    buildAuth : function(user, password){
+        if (!user || !password) return null;
+        var tok = user + ':' + password;
+        var hash = btoa(tok);
+        return "Basic " + hash;
+    },
+
+    call : function ( special) { 
+        if ( !special && main.hasInvalidChar(this.data.toLowerCase())) {  main.addAlert("Caractère(s) dangereux détecté(s) - Accès refusé", "danger"); return;}
         this.startLoading();
-
-        console.log( main.hasInvalidChar(this.data));
-
-        if (this.type != "post" && this.type != "get" && this.type != "put" && this.type != "delete") throw 'Type de requête "' + this.type + '" non valide';
         var self = this;
-       // var request = $.ajax({ type: this.type, url: this.url, data: this.data, timeout:config.timeout, dataType: "jsonp", crossDomain : true });
-        var request = $.ajax({ type: this.type, url: this.url, data: this.data, timeout:config.timeout });
+        if (this.type != "post" && this.type != "get" && this.type != "put" && this.type != "delete") throw 'Type de requête "' + this.type + '" non valide';
+
+        var request = $.ajax({  type   : this.type, 
+                                url    : this.url, 
+                                data   : this.data, 
+                                timeout: config.timeout,
+                                headers: {"Authorization": this.basic}
+         });
         request.done(function( data )   { self.stopLoading(); self.onSuccess( data) });
         request.fail(function( data )   { self.stopLoading(); self.onError( data)   });
         request.always(function( data ) { self.stopLoading(); self.onAlways( data)  });

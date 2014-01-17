@@ -43,7 +43,7 @@ var ConstatManager = Class({
 
     buildPJ : function( constat, type){
         var content = "";
-        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <input class="form-control" type="text" value="' + constat.pictures[i].data + '"/> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
+        if (type=="img")   for (var i = 0; i < constat.pictures.length; i++) content +='<div class="panel-body"> <div class="col-sm-12"> <textarea style="width:100%;">' + constat.pictures[i].data + '</textarea> </div> <img style="width:100%;"  src="' + constat.pictures[i].data + '"/> </div>'; 
         if (type=="media") 
             for (var i = 0; i < constat.sounds.length; i++){
                 var son = constat.sounds[i].url;
@@ -102,7 +102,7 @@ var ConstatManager = Class({
         var req = new Ajax( "reports/"+constatId+".json", data, "put"); 
         req.onSuccess = function( data){ main.addAlert("Constat sauvegardé avec succès", "success", "main.openClientsList()"); };
         req.onError   = function( data){ main.addAlert("Constat non sauvegardé", "danger"); };
-        req.call();
+        req.call( true);
     },
 
     saveMarkdown : function(){

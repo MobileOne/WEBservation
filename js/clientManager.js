@@ -1,6 +1,6 @@
 var ClientManager = Class({
     container : config.container,
-    clients : null,
+    clients   : null,
 
     initialize : function () { 
     },
@@ -30,10 +30,7 @@ var ClientManager = Class({
             };
             clientList.call();
         };
-        req.call();
-
-
-        
+        req.call(); 
     },
 
     buildAddClientForm : function(){
@@ -100,7 +97,6 @@ var ClientManager = Class({
             }
             $('#buildCollapseOne_' + id).append( constat);
         };
-        reportList.onError = function(data){ console.log(data);}
         reportList.call();
     }
 });

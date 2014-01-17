@@ -78,7 +78,7 @@ var LoginManager = Class({
         if ( !main.isEmail( mail)) return;      
 
         var d = { email : mail, password : pwd };
-        var newCorp = new Ajax( "authentifications.json", d, "post"); 
+        var newCorp = new Ajax( "authentifications.json", d, "post", mail, pwd); 
         newCorp.onSuccess = function( data){
             if (data == "Wrong") main.addAlert("Erreur d'identification", "danger"); 
             else {
