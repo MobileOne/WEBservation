@@ -88,7 +88,6 @@ var LoginManager = Class({
                 session.setItem("userNameToDisplay", userName);
                 main.openClientsList();
             }
-            newCorp.onError = function( data){ console.log( data)};
         };
         newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite", "danger"); };
         newCorp.call();
