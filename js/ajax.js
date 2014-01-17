@@ -21,6 +21,7 @@ var Ajax = Class({
     },
 
     call : function ( special) { 
+        if ( this.data)
         if ( !special && main.hasInvalidChar(this.data.toLowerCase())) {  main.addAlert("Caractère(s) dangereux détecté(s) - Accès refusé", "danger"); return;}
         this.startLoading();
         var self = this;

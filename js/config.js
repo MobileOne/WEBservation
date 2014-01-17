@@ -1,5 +1,6 @@
 var config = {};
-config.wsAPI     = "http://www.chronomundi.org/mobileOne/web/app_dev.php/api/";
+//config.wsAPI     = "http://www.chronomundi.org/mobileOne/web/app_dev.php/api/";
+config.wsAPI     = "https://192.168.2.200:8443/web/app_dev.php/api/";
 config.container = "#container";
 config.navBar    = "#navBar";
 config.timeout   = 10000;

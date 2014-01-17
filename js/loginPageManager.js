@@ -82,11 +82,13 @@ var LoginManager = Class({
         newCorp.onSuccess = function( data){
             if (data == "Wrong") main.addAlert("Erreur d'identification", "danger"); 
             else {
-                var userName = data.first_name + " " + data.last_name;
+                console.log( data)
+                var userName = data.username + " " + data.last_name;
                 config.userId = data.id;
                 session.setItem("userNameToDisplay", userName);
                 main.openClientsList();
             }
+            newCorp.onError = function( data){ console.log( data)};
         };
         newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite", "danger"); };
         newCorp.call();

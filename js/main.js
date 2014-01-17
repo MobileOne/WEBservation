@@ -121,7 +121,7 @@ var Main = Class({
     },
 
     hasInvalidChar : function( str){
-        var reg = new RegExp(/<|script|>|--/);
+        var reg = new RegExp(/<|>|&|--/);
         return reg.test(str)
     },
 

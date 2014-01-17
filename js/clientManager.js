@@ -16,17 +16,9 @@ var ClientManager = Class({
         var self = this;
         var req = new Ajax( "users/"+main.getUserId()+".json", null, "get"); 
         req.onSuccess = function( data){ 
-            var clientList = new Ajax( "companies/"+data.company.id+"/report.json", null, "get"); 
+            var clientList = new Ajax( "companies/"+data.company.id+"/customer.json", null, "get"); 
             clientList.onSuccess = function( data){ 
-                d = new Array();
-                d.push( data[0].customer);
-                for (var i = 0; i < data.length; i++){
-                    for (var j = 0; j < d.length; j++){
-                        if ( d[j].id == data[i].customer.id) continue;
-                        d.push( data[i].customer);
-                    }
-                }
-                main.buildClientsList( d); 
+                main.buildClientsList( data); 
             };
             clientList.call();
         };
@@ -57,13 +49,18 @@ var ClientManager = Class({
 
         if ( !main.isFormValid([prenom, nom])) return;
 
-        var d = { firstName : prenom, lastName : nom };
-        var newCorp = new Ajax( "customers.json", d, "post"); 
-        newCorp.onSuccess = function( data){ 
-            if (data) main.addAlert("Utilisateur crée", "success", "main.openClientsList()"); 
+        var req = new Ajax( "users/"+main.getUserId()+".json", null, "get"); 
+        req.onSuccess = function( data){ 
+
+            var d = { firstName : prenom, lastName : nom, companyId : data.company.id };
+            var newUser = new Ajax( "customers.json", d, "post"); 
+            newUser.onSuccess = function( data){ 
+                if (data) main.addAlert("Utilisateur crée", "success", "main.openClientsList()"); 
+            };
+            newUser.onError = function( data){ main.addAlert("Une erreur s'est produite lors de la création du client", "danger"); };
+            newUser.call();
         };
-        newCorp.onError = function( data){ main.addAlert("Une erreur s'est produite lors de la création du client", "danger"); };
-        newCorp.call();
+        req.call(); 
     },
 
     buildClientsList : function( clients){

@@ -100,7 +100,7 @@ var AdminManager = Class({
                 +'      <div class="panel panel-default">'
                 +'          <div class="panel-heading">'
                 +'              <h4 class="panel-title">'
-                +'                  <a data-toggle="collapse" href="#buildCollapseOne_' + this.users[i].id +'">' + this.users[i].first_name + ' ' + this.users[i].last_name + ' </a>'
+                +'                  <a data-toggle="collapse" href="#buildCollapseOne_' + this.users[i].id +'">' + this.users[i].username + ' ' + this.users[i].last_name + ' </a>'
                 +'              </h4>'
                 +'          </div>'
                 +'      <div id="buildCollapseOne_' + this.users[i].id +'" class="panel-collapse collapse out">';
@@ -120,7 +120,7 @@ var AdminManager = Class({
             info +='<div class="panel-body">'
                  +'     <form class="form-horizontal" method="post" role="form" onsubmit="main.submitModifUser(this); return false;">'
                  +'         <div style="display:none">' + main.buildInput("id", user.id, "Id", true) + '</div>'
-                 +          main.buildInput("first_name", user.first_name, "Prénom", true)
+                 +          main.buildInput("first_name", user.username, "Prénom", true)
                  +          main.buildInput("last_name",  user.last_name,  "Nom",    true)
                  +          main.buildInput("email",      user.email,      "Email",  true)
                  +'         <div class="btn-group">'
