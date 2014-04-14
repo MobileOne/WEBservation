@@ -28,5 +28,5 @@ var SessionStore = Class({
     	this.store.clear();
     }
 });
-var session = new SessionStore( false);
-var local   = new SessionStore( true);
+var store = new SessionStore( false); // Session
+var local = new SessionStore( true);  // Permanent
